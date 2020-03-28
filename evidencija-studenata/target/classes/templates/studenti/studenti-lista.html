@@ -1,0 +1,56 @@
+<!DOCTYPE HTML>
+
+<html lang="en" xmlns:th="http://www.thymeleaf.org">
+
+<head>
+<meta charset="utf-8">
+<meta name="viewport"
+	content="width=device-width, initial-scale=1, shrink-to-fit=no">
+
+<!-- Bootstrap CSS -->
+<link rel="stylesheet"
+	href="https://stackpath.bootstrapcdn.com/bootstrap/4.3.1/css/bootstrap.min.css"
+	integrity="sha384-ggOyR0iXCbMQv3Xipma34MD+dH/1fQ784/j6cY/iJTQUOhcWr7x9JvoRxT2MZw1T"
+	crossorigin="anonymous">
+
+
+<title>Evidencija studenata</title>
+</head>
+
+<body>
+<div class="container">
+	<h3>Evidencija studenata</h3>
+
+	<hr>
+	
+	<a th:href="@{/studenti/formaZaDodavanje}" class="btn btn-primary btn-sm mb-3">Dodaj studenta</a>
+	
+	<table class="table table-bordered table-striped">
+		<thead class="thead-dark">
+			<tr>
+				<th>Ime</th>
+				<th>Prezime</th>
+				<th>Email</th>
+				<th>JMBAG</th>
+				<th>Action</th>
+			</tr>
+		</thead>
+
+		<tbody>
+			<tr th:each="temp : ${studenti}">
+				<td th:text="${temp.ime}" />
+				<td th:text="${temp.prezime}" />
+				<td th:text="${temp.email}" />
+				<td th:text="${temp.jmbag}" />
+				<td>
+					<a th:href="@{/studenti/formaZaAzuriranje(studentId=${temp.id})}" class="btn btn-info btn-sm">Ažuriraj</a>
+					
+					<a th:href="@{/studenti/obrisiStudenta(studentId=${temp.id})}" class="btn btn-danger btn-sm"
+					onClick="if (!(confirm('Jeste li sigurani da želite obrisati studenta?'))) return false">Obriši</a>
+				</td>
+			</tr>
+		</tbody>
+	</table>
+</div>
+</body>
+</html>
