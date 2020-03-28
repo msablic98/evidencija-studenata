@@ -17,39 +17,31 @@
 <title>Forma za dodavanje studenta</title>
 
 </head>
-
 <body>
 
-	 <div class="container">
+	 <div class="container mx-auto text-center">
 	 	
-	 	<h3>Evidencija studenata</h3>
+	 	<h3 style="margin-top:20px;">Evidencija studenata</h3>
 	 	<hr>
 	 	
 	 	<p class="h4 mb-4">Dodaj novog studenta</p>
 	 	
-	 	<form action="#" th:action="@{/studenti/spremiStudenta}"
-	 					 th:object="${student}" method="POST">
-	 	
-	 		<input type="hidden" th:field="*{id}" />
-	 	
-	 		<input type="text" th:field="*{ime}" class="form-control mb-4 col-4" placeholder="Ime" />
-	 		
-	 		<input type="text" th:field="*{prezime}" class="form-control mb-4 col-4" placeholder="Prezime" />
-	 		
-	 		<input type="text" th:field="*{email}" class="form-control mb-4 col-4" placeholder="Email" />
-	 		
-	 		<input type="text" th:field="*{jmbag}" class="form-control mb-4 col-4" placeholder="JMBAG" />
-	 		
-	 		<button type="submit" class="btn btn-info col-2">Save</button>
-	 		
-	 	</form>
-
-	 		<hr>
-	 		
-	 		<a th:href="@{/studenti/lista}">Natrag na listu studenta</a>
-	 					 
+	 	<center>
+		 	<form action="#" th:action="@{/studenti/spremiStudenta}"
+		 					 th:object="${student}" method="POST">
+		 		<input type="hidden" th:field="*{id}" />
+		 		<input type="text" th:field="*{ime}" class="form-control mb-4 col-4" placeholder="Ime" />
+		 		<input type="text" th:field="*{prezime}" class="form-control mb-4 col-4" placeholder="Prezime" />
+		 		<input type="text" th:field="*{email}" class="form-control mb-4 col-4" placeholder="Email" />
+		 		<input type="text" th:field="*{jmbag}" class="form-control mb-4 col-4" placeholder="JMBAG" />
+		 		<button type="submit" class="btn btn-info col-2">Spremi</button>
+		 	</form>
+		</center>
+		
+ 		<hr>
+ 		
+ 		<a th:href="@{/studenti/lista}">Natrag na listu studenta</a>
 	 </div>
 
 </body>
-
 </html>
