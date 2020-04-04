@@ -12,6 +12,7 @@ import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 
+import com.tvz.evidencija.studenata.dto.PrisutstvoDto;
 import com.tvz.evidencija.studenata.entity.Prisutstvo;
 import com.tvz.evidencija.studenata.entity.Student;
 import com.tvz.evidencija.studenata.service.PrisutstvoService;
@@ -77,35 +78,53 @@ public class StudentController {
 	public String upisiPrisutstvo(Model model) {
 		
 		List<Student> studenti = studentService.findAll();
-		Prisutstvo prisutstvo = new Prisutstvo();
+		PrisutstvoDto prisutstvoDto = new PrisutstvoDto();
+		
 		
 		model.addAttribute("studenti", studenti);
-		model.addAttribute("prisutstvo",prisutstvo);
+		model.addAttribute("prisutstvoDto",prisutstvoDto);
 		
 		return "studenti/studenti-prisutstvo";
 		
 	}
 	
 	@PostMapping("/spremiPrisutstvo")
-	public String spremiPrisutstvo(@ModelAttribute("prisutstvo") Prisutstvo prisutstvo) {
+	public String spremiPrisutstvo(@ModelAttribute("prisutstvoDto") PrisutstvoDto prisutstvoDto) {
+		
+		Prisutstvo prisutstvo;
+		
+		Prisutstvo postojecePrisutstvo = prisutstvoService.getPrisutstvoByBrojVjezbe(prisutstvoDto.getBrojVjezbe());
+		
+		if(postojecePrisutstvo != null) {
+			postojecePrisutstvo.getStudenti().add(studentService.getStudentById(prisutstvoDto.getStudentId()));
+			
+			prisutstvo = postojecePrisutstvo;
+		} else {
+			prisutstvo = new Prisutstvo();
+			
+			prisutstvo.setBrojVjezbe(prisutstvoDto.getBrojVjezbe());
+			prisutstvo.setStudenti(List.of(studentService.getStudentById(prisutstvoDto.getStudentId())));
+		}
 		
 		prisutstvoService.save(prisutstvo);
 		
-		return "redirect:/studenti/lista";
+		System.out.println(prisutstvoService.findAll());
+		
+		return "redirect:/studenti/upisiPristustvo";
 	}
 	
-	@GetMapping("/upisiOcjenu")
-	public String upisiOcjenu(Model model) {
-		
-		List<Prisutstvo> prisutstva = prisutstvoService.findAll();
-		List<Student> studenti = new ArrayList<>();
-		for(int i=0; i<=prisutstva.size(); i++) {
-			studenti.add(studentService.getStudentById(prisutstva.get(i).getStudentId()));
-		}
-		
-		model.addAttribute("studenti", studenti);
-		
-		return "studenti/studenti-ocjene";
-	}
+//	@GetMapping("/upisiOcjenu")
+//	public String upisiOcjenu(Model model) {
+//		
+//		List<Prisutstvo> prisutstva = prisutstvoService.findAll();
+//		List<Student> studenti = new ArrayList<>();
+//		for(int i=0; i<prisutstva.size(); i++) {
+//			studenti.add(studentService.getStudentById(prisutstva.get(i).getStudentId()));
+//		}
+//		
+//		model.addAttribute("studenti", studenti);
+//		
+//		return "studenti/studenti-ocjene";
+//	}
 	
 }

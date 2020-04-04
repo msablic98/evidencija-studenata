@@ -1,10 +1,14 @@
 package com.tvz.evidencija.studenata.entity;
 
+import java.util.List;
+
 import javax.persistence.Column;
 import javax.persistence.Entity;
+import javax.persistence.FetchType;
 import javax.persistence.GeneratedValue;
 import javax.persistence.GenerationType;
 import javax.persistence.Id;
+import javax.persistence.OneToMany;
 import javax.persistence.Table;
 
 @Entity
@@ -16,11 +20,8 @@ public class Prisutstvo {
 	@Column(name="id")
 	private int id;
 	
-	@Column(name="student_id")
-	private int studentId;
-	
-	@Column(name="prisutan")
-	private boolean prisutan;
+	@OneToMany(targetEntity=Student.class, fetch=FetchType.EAGER)
+	private List<Student> studenti;
 	
 	@Column(name="broj_vjezbe")
 	private int brojVjezbe;
@@ -29,11 +30,10 @@ public class Prisutstvo {
 		
 	}
 	
-	public Prisutstvo(int id, int studentId, boolean prisutan, int brojVjezbe) {
+	public Prisutstvo(int id, List<Student> studenti, int brojVjezbe) {
 		super();
 		this.id = id;
-		this.studentId = studentId;
-		this.prisutan = prisutan;
+		this.studenti = studenti;
 		this.brojVjezbe = brojVjezbe;
 	}
 
@@ -45,20 +45,12 @@ public class Prisutstvo {
 		this.id = id;
 	}
 
-	public int getStudentId() {
-		return studentId;
+	public List<Student> getStudenti() {
+		return studenti;
 	}
 
-	public void setStudentId(int studentId) {
-		this.studentId = studentId;
-	}
-
-	public boolean isPrisutan() {
-		return prisutan;
-	}
-
-	public void setPrisutan(boolean prisutan) {
-		this.prisutan = prisutan;
+	public void setStudenti(List<Student> studenti) {
+		this.studenti = studenti;
 	}
 
 	public int getBrojVjezbe() {
@@ -71,7 +63,7 @@ public class Prisutstvo {
 
 	@Override
 	public String toString() {
-		return "Prisutstvo [id=" + id + ", studentId=" + studentId + ", prisutan=" + prisutan + ", brojVjezbe="
+		return "Prisutstvo [id=" + id + ", studentId=" + studenti+ ", brojVjezbe="
 				+ brojVjezbe + "]";
 	}
 	

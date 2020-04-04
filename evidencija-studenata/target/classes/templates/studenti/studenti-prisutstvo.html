@@ -26,7 +26,7 @@
 		<hr>
 
 		<form action="#" th:action="@{/studenti/spremiPrisutstvo}"
-			th:object="${prisutstvo}" method="POST">
+			th:object="${prisutstvoDto}" method="POST">
 
 			<label for="vjezbe"  class="col-sm-2 col-form-label">Odaberi vježbu: </label> 
 			<select id="vjezbe" class="form-control" th:field="*{brojVjezbe}">
@@ -55,18 +55,18 @@
 
 				<tbody>
 					<tr th:each="temp : ${studenti}">
+						<input type="hidden" th:value="${temp.id}" th:attr="name='studentId', id='studentId'" />
 						<td th:text="${temp.ime}" />
 						<td th:text="${temp.prezime}" />
 						<td th:text="${temp.email}" />
 						<td th:text="${temp.jmbag}" />
 						<td>
-						<input type="checkbox" th:field="*{prisutan}">
+						<button type="submit" class="btn btn-success btn-sm">Dodaj</button>
 						</td>
-						<input type="hidden" class="text-center" th:field="*{studentId}" th:text="${temp.id}" />
 					</tr>
 				</tbody>
 			</table>
-			<button type="submit" class="btn btn-info col-2">Spremi</button>
+			
 		</form>
 		
 		<hr>
