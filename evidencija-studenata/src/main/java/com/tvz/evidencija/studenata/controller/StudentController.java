@@ -76,8 +76,10 @@ public class StudentController {
 	public String upisiPrisutstvo(Model model) {
 		
 		List<Student> studenti = studentService.findAll();
+		Prisutstvo prisutstvo = new Prisutstvo();
 		
 		model.addAttribute("studenti", studenti);
+		model.addAttribute("prisutstvo",prisutstvo);
 		
 		return "studenti/studenti-prisutstvo";
 		
