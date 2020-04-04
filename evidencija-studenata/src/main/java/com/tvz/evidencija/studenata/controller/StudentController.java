@@ -1,5 +1,6 @@
 package com.tvz.evidencija.studenata.controller;
 
+import java.util.ArrayList;
 import java.util.List;
 
 import org.springframework.beans.factory.annotation.Autowired;
@@ -92,4 +93,19 @@ public class StudentController {
 		
 		return "redirect:/studenti/lista";
 	}
+	
+	@GetMapping("/upisiOcjenu")
+	public String upisiOcjenu(Model model) {
+		
+		List<Prisutstvo> prisutstva = prisutstvoService.findAll();
+		List<Student> studenti = new ArrayList<>();
+		for(int i=0; i<prisutstva.size(); i++) {
+			studenti.add(studentService.getStudentById(prisutstva.get(i).getStudentId()));
+		}
+		
+		model.addAttribute("studenti", studenti);
+		
+		return "studenti/studenti-ocjene";
+	}
+	
 }

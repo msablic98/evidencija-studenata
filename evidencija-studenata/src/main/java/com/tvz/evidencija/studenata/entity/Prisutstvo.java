@@ -68,6 +68,11 @@ public class Prisutstvo {
 	public void setBrojVjezbe(int brojVjezbe) {
 		this.brojVjezbe = brojVjezbe;
 	}
-	
+
+	@Override
+	public String toString() {
+		return "Prisutstvo [id=" + id + ", studentId=" + studentId + ", prisutan=" + prisutan + ", brojVjezbe="
+				+ brojVjezbe + "]";
+	}
 	
 }

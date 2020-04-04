@@ -14,7 +14,7 @@
 	crossorigin="anonymous">
 
 
-<title>Prisutstvo</title>
+<title>Ocjene</title>
 </head>
 
 <body>
@@ -25,23 +25,9 @@
 			studenata</h3>
 		<hr>
 
-		<form action="#" th:action="@{/studenti/spremiPrisutstvo}"
-			th:object="${prisutstvo}" method="POST">
+		<form action="#" th:action="@{/studenti/spremiStudenta}"
+			th:object="${student}" method="POST">
 
-			<label for="vjezbe"  class="col-sm-2 col-form-label">Odaberi vježbu: </label> 
-			<select id="vjezbe" class="form-control" th:field="*{brojVjezbe}">
-				<option value="1">Prva vježba</option>
-				<option value="2">Druga vježba</option>
-				<option value="3">Treća vježba</option>
-				<option value="4">Četvrta vježba</option>
-				<option value="5">Peta vježba</option>
-				<option value="6">Šesta vježba</option>
-				<option value="7">Sedma vježba</option>
-				<option value="8">Osma vježba</option>
-				<option value="9">Deveta vježba</option>
-				<option value="10">Deseta vježba</option>
-			</select>
-			<br>
 			<table class="table table-bordered table-striped">
 				<thead class="thead-dark">
 					<tr>
@@ -49,7 +35,7 @@
 						<th>Prezime</th>
 						<th>Email</th>
 						<th>JMBAG</th>
-						<th>Prisutan</th>
+						<th>Ocjena</th>
 					</tr>
 				</thead>
 
@@ -60,9 +46,9 @@
 						<td th:text="${temp.email}" />
 						<td th:text="${temp.jmbag}" />
 						<td>
-						<input type="checkbox" th:field="*{prisutan}">
+						<input class="form-control" type="number" value="1" min="1" max="5" th:field="${ocjena}">
 						</td>
-						<input type="hidden" class="text-center" th:field="*{studentId}" th:text="${temp.id}" />
+						<input type="hidden" class="text-center" th:field="${id}" th:text="${temp.id}" />
 					</tr>
 				</tbody>
 			</table>

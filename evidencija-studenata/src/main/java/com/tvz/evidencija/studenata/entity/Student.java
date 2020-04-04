@@ -30,6 +30,9 @@ public class Student {
 	@Column(name="jmbag")
 	private String jmbag;
 	
+	@Column(name="ocjena")
+	private int ocjena;
+	
 	public Student() {
 		
 	}
@@ -81,6 +84,15 @@ public class Student {
 
 	public void setJmbag(String jmbag) {
 		this.jmbag = jmbag;
+	}
+	
+
+	public int getOcjena() {
+		return ocjena;
+	}
+
+	public void setOcjena(int ocjena) {
+		this.ocjena = ocjena;
 	}
 
 	@Override
