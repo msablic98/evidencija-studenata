@@ -43,7 +43,7 @@
 				  <button class="btn btn-secondary dropdown-toggle" type="button" id="dropdownMenuButton" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
 				    Odaberi vježbu
 				  </button>
-				  <div class="dropdown-menu" aria-labelledby="dropdownMenuButton" th:field="*{brojVjezbe}">
+				  <div class="dropdown-menu" aria-labelledby="dropdownMenuButton" th:field="*{broj_vjezbe}">
 				    <a class="dropdown-item" value="1" href="#">Prva vježba</a>
 				    <a class="dropdown-item" value="2" href="#">Druga vježba</a>
 				    <a class="dropdown-item" value="3" href="#">Treća vježba</a>
@@ -68,7 +68,7 @@
 							  <input type="checkbox" th:field="*{prisutan}"class="custom-control-input">
 							</div>
 						</td>
-						<input type="hidden" th:field="*{studentId}" th:text="${temp.id}" />
+						<input type="hidden" th:field="*{student_id}" th:text="${temp.id}" />
 					</tr>
 				</tbody>	
 			

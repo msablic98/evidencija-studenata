@@ -1,0 +1,4 @@
+com\tvz\evidencija\studenata\entity\Prisutstvo.class
+com\tvz\evidencija\studenata\dao\PrisutstvoRepository.class
+com\tvz\evidencija\studenata\service\PrisutstvoServiceImpl.class
+com\tvz\evidencija\studenata\service\PrisutstvoService.class
