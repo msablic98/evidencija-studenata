@@ -11,7 +11,9 @@ import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 
+import com.tvz.evidencija.studenata.entity.Prisutstvo;
 import com.tvz.evidencija.studenata.entity.Student;
+import com.tvz.evidencija.studenata.service.PrisutstvoService;
 import com.tvz.evidencija.studenata.service.StudentService;
 
 @Controller
@@ -20,6 +22,9 @@ public class StudentController {
 	
 	@Autowired
 	private StudentService studentService;
+	
+	@Autowired
+	private PrisutstvoService prisutstvoService;
 	
 	@GetMapping("/lista")
 	public String getLista(Model model) {
@@ -67,4 +72,22 @@ public class StudentController {
 		return "redirect:/studenti/lista";
 	}
 	
+	@GetMapping("/pristustvo")
+	public String upisiPrisutstvo(Model model) {
+		
+		List<Student> studenti = studentService.findAll();
+		
+		model.addAttribute("studenti", studenti);
+		
+		return "studenti/studenti-prisutstvo";
+		
+	}
+	
+	@PostMapping("/spremiPrisutstvo")
+	public String spremiPrisutstvo(@ModelAttribute("prisutstvo") Prisutstvo prisutstvo) {
+		
+		prisutstvoService.save(prisutstvo);
+		
+		return "redirect:/studenti/lista";
+	}
 }

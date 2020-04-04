@@ -1,0 +1,82 @@
+<!DOCTYPE HTML>
+
+<html lang="en" xmlns:th="http://www.thymeleaf.org">
+
+<head>
+<meta charset="utf-8">
+<meta name="viewport"
+	content="width=device-width, initial-scale=1, shrink-to-fit=no">
+
+<!-- Bootstrap CSS -->
+<link rel="stylesheet"
+	href="https://stackpath.bootstrapcdn.com/bootstrap/4.3.1/css/bootstrap.min.css"
+	integrity="sha384-ggOyR0iXCbMQv3Xipma34MD+dH/1fQ784/j6cY/iJTQUOhcWr7x9JvoRxT2MZw1T"
+	crossorigin="anonymous">
+
+
+<title>Prisutstvo</title>
+</head>
+
+<body>
+
+	<div class="container">
+	
+		<h3 style="text-align:center; margin-top:20px;">Evidencija studenata</h3>
+		<hr>
+		
+		<table class="table table-bordered table-striped">
+			<thead class="thead-dark">
+				<tr>
+					<th>Ime</th>
+					<th>Prezime</th>
+					<th>Email</th>
+					<th>JMBAG</th>
+					<th>Prisutan</th>
+				</tr>
+			</thead>
+	
+			
+			<form action="#" th:action="@{/studenti/spremiPrisutstvo}"
+		 					 th:object="${prisutstvo}" method="POST">
+		 					 
+				<div class="dropdown">
+				  <button class="btn btn-secondary dropdown-toggle" type="button" id="dropdownMenuButton" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
+				    Odaberi vježbu
+				  </button>
+				  <div class="dropdown-menu" aria-labelledby="dropdownMenuButton" th:field="*{brojVjezbe}">
+				    <a class="dropdown-item" value="1" href="#">Prva vježba</a>
+				    <a class="dropdown-item" value="2" href="#">Druga vježba</a>
+				    <a class="dropdown-item" value="3" href="#">Treća vježba</a>
+				    <a class="dropdown-item" value="4" href="#">Četvrta vježba</a>
+				    <a class="dropdown-item" value="5" href="#">Peta vježba</a>
+				    <a class="dropdown-item" value="6" href="#">Šesta vježba</a>
+				    <a class="dropdown-item" value="7" href="#">Sedma vježba</a>
+				    <a class="dropdown-item" value="8" href="#">Osma vježba</a>
+				    <a class="dropdown-item" value="9" href="#">Deveta vježba</a>
+				    <a class="dropdown-item" value="10" href="#">Deseta vježba</a>
+				  </div>
+				</div>			 
+		 					 
+			 	<tbody>			 
+					<tr th:each="temp : ${studenti}">
+						<td th:text="${temp.ime}" />
+						<td th:text="${temp.prezime}" />
+						<td th:text="${temp.email}" />
+						<td th:text="${temp.jmbag}" />
+						<td>
+							<div class="custom-control custom-switch">
+							  <input type="checkbox" th:field="*{prisutan}"class="custom-control-input">
+							</div>
+						</td>
+						<input type="hidden" th:field="*{studentId}" th:text="${temp.id}" />
+					</tr>
+				</tbody>	
+			
+				<button type="submit" class="btn btn-info col-2">Spremi</button>
+			</form>
+			
+		</table>
+		
+	</div>
+</body>
+</html>
