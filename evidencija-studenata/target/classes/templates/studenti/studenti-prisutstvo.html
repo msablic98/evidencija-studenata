@@ -28,8 +28,8 @@
 		<form action="#" th:action="@{/studenti/spremiPrisutstvo}"
 			th:object="${prisutstvo}" method="POST">
 
-			<label for="vjezbe">Odaberi vježbu: </label> <select id="vjezbe"
-				th:field="*{brojVjezbe}">
+			<label for="vjezbe"  class="col-sm-2 col-form-label">Odaberi vježbu: </label> 
+			<select id="vjezbe" class="form-control" th:field="*{brojVjezbe}">
 				<option value="1">Prva vježba</option>
 				<option value="2">Druga vježba</option>
 				<option value="3">Treća vježba</option>
@@ -78,10 +78,7 @@
 						<td th:text="${temp.email}" />
 						<td th:text="${temp.jmbag}" />
 						<td>
-							<div class="custom-control custom-switch">
-								<input type="checkbox" th:field="*{prisutan}"
-									class="custom-control-input">
-							</div>
+						<input type="checkbox" th:field="*{prisutan}">
 						</td>
 						<input type="hidden" th:field="*{studentId}" th:text="${temp.id}" />
 					</tr>
