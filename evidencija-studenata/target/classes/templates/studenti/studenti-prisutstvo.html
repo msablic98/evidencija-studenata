@@ -80,16 +80,14 @@
 						<td th:text="${temp.jmbag}" />
 						<td>
 							<div class="custom-control custom-switch">
-							  <input type="checkbox" th:field="*{prisutstvo.prisutan}"class="custom-control-input">
+							  <input type="checkbox" th:field="*{prisutan}"class="custom-control-input">
 							</div>
 						</td>
-						<input type="hidden" th:field="*{prisutstvo.studentId}" th:text="${temp.id}" />
+						<input type="hidden" th:field="*{studentId}" th:text="${temp.id}" />
 					</tr>
+					<button type="submit" class="btn btn-info col-2">Spremi</button>
 				</tbody>	
-			
-				<button type="submit" class="btn btn-info col-2">Spremi</button>
 			</form>
-			
 		</table>
 		
 	</div>
