@@ -39,11 +39,11 @@
 			<form action="#" th:action="@{/studenti/spremiPrisutstvo}"
 		 					 th:object="${prisutstvo}" method="POST">
 		 					 
-				<div class="dropdown">
+				<!-- <div class="dropdown">
 				  <button class="btn btn-secondary dropdown-toggle" type="button" id="dropdownMenuButton" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
 				    Odaberi vježbu
 				  </button>
-				  <div class="dropdown-menu" aria-labelledby="dropdownMenuButton" th:field="*{prisutstvo.brojVjezbe}">
+				  <div class="dropdown-menu" aria-labelledby="dropdownMenuButton" th:value="*{prisutstvo.brojVjezbe}">
 				    <a class="dropdown-item" value="1" href="#">Prva vježba</a>
 				    <a class="dropdown-item" value="2" href="#">Druga vježba</a>
 				    <a class="dropdown-item" value="3" href="#">Treća vježba</a>
@@ -55,8 +55,23 @@
 				    <a class="dropdown-item" value="9" href="#">Deveta vježba</a>
 				    <a class="dropdown-item" value="10" href="#">Deseta vježba</a>
 				  </div>
-				</div>			 
-		 					 
+				</div> -->		
+				
+				<label for="vjezbe">Odaberi vježbu:</label>
+
+				<select id="vjezbe" th:field="*{prisutstvo.brojVjezbe}">
+				  <option value="1">Prva vježba</option>
+				  <option value="2">Druga vježba</option>
+				  <option value="3">Treća vježba</option>
+				  <option value="4">Četvrta vježba</option>
+				  <option value="5">Peta vježba</option>
+				  <option value="6">Šesta vježba</option>
+				  <option value="7">Sedma vježba</option>
+				  <option value="8">Osma vježba</option>
+				  <option value="9">Deveta vježba</option>
+				  <option value="10">Deseta vježba</option>
+				</select>	 
+						 					 
 			 	<tbody>			 
 					<tr th:each="temp : ${studenti}">
 						<td th:text="${temp.ime}" />
