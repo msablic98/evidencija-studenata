@@ -72,7 +72,7 @@ public class StudentController {
 		return "redirect:/studenti/lista";
 	}
 	
-	@GetMapping("/pristustvo")
+	@GetMapping("/upisiPristustvo")
 	public String upisiPrisutstvo(Model model) {
 		
 		List<Student> studenti = studentService.findAll();
