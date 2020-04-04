@@ -99,7 +99,7 @@ public class StudentController {
 		
 		List<Prisutstvo> prisutstva = prisutstvoService.findAll();
 		List<Student> studenti = new ArrayList<>();
-		for(int i=1; i<=prisutstva.size(); i++) {
+		for(int i=0; i<=prisutstva.size(); i++) {
 			studenti.add(studentService.getStudentById(prisutstva.get(i).getStudentId()));
 		}
 		
