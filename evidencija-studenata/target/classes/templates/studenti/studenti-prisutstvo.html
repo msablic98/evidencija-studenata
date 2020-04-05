@@ -53,6 +53,7 @@
 							<div th:each="temp : ${studenti}">
 								<option th:value="${temp.id}" th:text="${temp.ime + ' ' + temp.prezime + ', ' + temp.jmbag}"/>
 							</div>
+							<option value="0">Nitko prisutan</option>
 						</select>
 						
 						<br>

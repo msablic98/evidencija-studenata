@@ -14,11 +14,13 @@ import org.springframework.web.bind.annotation.ModelAttribute;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
+import org.springframework.web.servlet.ModelAndView;
 
 import com.tvz.evidencija.studenata.dto.PrisutstvoDto;
 import com.tvz.evidencija.studenata.dto.UpisOcjeneDto;
 import com.tvz.evidencija.studenata.entity.Prisutstvo;
 import com.tvz.evidencija.studenata.entity.Student;
+import com.tvz.evidencija.studenata.excel.IzvozExcel;
 import com.tvz.evidencija.studenata.service.PrisutstvoService;
 import com.tvz.evidencija.studenata.service.StudentService;
 
@@ -137,30 +139,33 @@ public class StudentController {
 	public String spremiPrisutstvo(@ModelAttribute("prisutstvoDto") PrisutstvoDto prisutstvoDto) {
 		LOGGER.debug("Zahtjev za upis prisutstva za studenta sa ID-jem: ", prisutstvoDto.getStudentId());
 		
-		try {
-			Prisutstvo prisutstvo = new Prisutstvo();
-			Prisutstvo postojecePrisutstvo = prisutstvoService.getPrisutstvoByBrojVjezbe(prisutstvoDto.getBrojVjezbe());
-			Student student = studentService.getStudentById(prisutstvoDto.getStudentId());
-			
-			if(postojecePrisutstvo != null) {
-				if(postojecePrisutstvo.getStudenti().contains(studentService.getStudentById(prisutstvoDto.getStudentId()))) {
-					// Ništa se ne događa jer ako student postoji u klasi za određenu vježbu, ne dodaje se ponovno.
-				} else {
-					postojecePrisutstvo.getStudenti().add(studentService.getStudentById(prisutstvoDto.getStudentId()));
-					prisutstvo = postojecePrisutstvo;
-				}
-			} else {
-				prisutstvo = new Prisutstvo();
+		Prisutstvo prisutstvo = new Prisutstvo();
+		
+		if(prisutstvoDto.getStudentId() != 0) {
+			try {
+				Prisutstvo postojecePrisutstvo = prisutstvoService.getPrisutstvoByBrojVjezbe(prisutstvoDto.getBrojVjezbe());
+				Student student = studentService.getStudentById(prisutstvoDto.getStudentId());
 				
-				prisutstvo.setBrojVjezbe(prisutstvoDto.getBrojVjezbe());
-				prisutstvo.setStudenti(List.of(studentService.getStudentById(prisutstvoDto.getStudentId())));
-				student.setEvidentiran(true);
+				if(postojecePrisutstvo != null) {
+					if(postojecePrisutstvo.getStudenti().contains(studentService.getStudentById(prisutstvoDto.getStudentId()))) {
+						// Ništa se ne događa jer ako student postoji u klasi za određenu vježbu, ne dodaje se ponovno.
+					} else {
+						postojecePrisutstvo.getStudenti().add(studentService.getStudentById(prisutstvoDto.getStudentId()));
+						prisutstvo = postojecePrisutstvo;
+					}
+				} else {
+					prisutstvo.setBrojVjezbe(prisutstvoDto.getBrojVjezbe());
+					prisutstvo.setStudenti(List.of(studentService.getStudentById(prisutstvoDto.getStudentId())));
+					student.setEvidentiran(true);
+				}
+			} catch (Exception e) {
+				LOGGER.error("Iznimka u upisu prisutstva za studenta sa ID-jem: " + prisutstvoDto.getStudentId(), e.getMessage());
 			}
-			
-			prisutstvoService.save(prisutstvo);
-		} catch (Exception e) {
-			LOGGER.error("Iznimka u upisu prisutstva za studenta sa ID-jem: " + prisutstvoDto.getStudentId(), e.getMessage());
+		} else {
+			prisutstvo.setBrojVjezbe(prisutstvoDto.getBrojVjezbe());
 		}
+		
+		prisutstvoService.save(prisutstvo);
 		
 		return "redirect:/studenti/upisiPristustvo";
 	}
@@ -214,7 +219,7 @@ public class StudentController {
 			**/
 			for(int i = 0; i < sviStudenti.size(); i++) {
 				if(brojDolazaka.get(sviStudenti.get(i)) != null) {
-					if(brojDolazaka.get(sviStudenti.get(i)) >= 6) {
+					if(brojDolazaka.get(sviStudenti.get(i)) >= 2) {
 						studentiZaUpis.add(sviStudenti.get(i));
 					}
 				}
@@ -282,6 +287,58 @@ public class StudentController {
 		model.addAttribute("uneseneSveVjezbe", uneseneSveVjezbe);
 		
 		return "studenti/studenti-pregled";
+	}
+	
+	@GetMapping("/izveziUspjesne")
+	public ModelAndView izveziUspjesne(){
+		
+        List<Student> studentiZaIzvoz = new ArrayList<Student>(); 
+        
+        try {
+			List<Student> studenti = studentService.findAll();
+			/**
+			 	Iteriramo kroz listu svih studenata te ako je studentu ocjena 0 (nije unesena) ili 1 (nedovoljan) ne izvozi se u Excel.
+			**/	
+			for(int i = 0; i < studenti.size(); i++) {
+				if(!(Integer.valueOf(studenti.get(i).getOcjena()).equals(Integer.valueOf(0)) || Integer.valueOf(studenti.get(i).getOcjena()).equals(Integer.valueOf(1)))){
+					studentiZaIzvoz.add(studenti.get(i));
+				} 
+			}
+		} catch (Exception e) {
+			LOGGER.error("Iznimka u dohvatu studenata za izvoz u Excel dokument", e.getMessage());
+		}
+        
+        if(studentiZaIzvoz.isEmpty()) {
+        	return null;
+        }
+        
+        return new ModelAndView(new IzvozExcel(), "studentiZaIzvoz", studentiZaIzvoz);
+	}
+	
+	@GetMapping("/izveziNeuspjesne")
+	public ModelAndView izveziNespjesne(){
+		
+        List<Student> studentiZaIzvoz = new ArrayList<Student>(); 
+        
+        try {
+			List<Student> studenti = studentService.findAll();
+			/**
+			 	Iteriramo kroz listu svih studenata te ako je studentu ocjena 0 (nije unesena) ili 1 (nedovoljan) izvozi se u Excel.
+			**/
+			for(int i = 0; i < studenti.size(); i++) {
+				if(Integer.valueOf(studenti.get(i).getOcjena()).equals(Integer.valueOf(0)) || Integer.valueOf(studenti.get(i).getOcjena()).equals(Integer.valueOf(1))){
+					studentiZaIzvoz.add(studenti.get(i));
+				} 
+			}
+		} catch (Exception e) {
+			LOGGER.error("Iznimka u dohvatu studenata za izvoz u Excel dokument", e.getMessage());
+		}
+        
+        if(studentiZaIzvoz.isEmpty()) {
+        	return null;
+        }
+        
+        return new ModelAndView(new IzvozExcel(), "studentiZaIzvoz", studentiZaIzvoz);
 	}
 	
 }

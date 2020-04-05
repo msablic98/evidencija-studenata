@@ -1,4 +1,13 @@
+com\tvz\evidencija\studenata\service\StudentServiceImpl.class
+com\tvz\evidencija\studenata\entity\Student.class
+com\tvz\evidencija\studenata\dto\UpisOcjeneDto.class
+com\tvz\evidencija\studenata\service\StudentService.class
+com\tvz\evidencija\studenata\EvidencijaStudenataApplication.class
 com\tvz\evidencija\studenata\entity\Prisutstvo.class
+com\tvz\evidencija\studenata\excel\IzvozExcel.class
 com\tvz\evidencija\studenata\dao\PrisutstvoRepository.class
+com\tvz\evidencija\studenata\dao\StudentRepository.class
+com\tvz\evidencija\studenata\controller\StudentController.class
+com\tvz\evidencija\studenata\dto\PrisutstvoDto.class
 com\tvz\evidencija\studenata\service\PrisutstvoServiceImpl.class
 com\tvz\evidencija\studenata\service\PrisutstvoService.class
