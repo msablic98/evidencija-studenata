@@ -25,39 +25,36 @@
 			studenata</h3>
 		<hr>
 
-		<form action="#" th:action="@{/studenti/spremiStudenta}"
-			th:object="${student}" method="POST">
+		<p class="h4 mb-4 text-center">Upis ocjene</p>
 
-			<table class="table table-bordered table-striped">
-				<thead class="thead-dark">
-					<tr>
-						<th>Ime</th>
-						<th>Prezime</th>
-						<th>Email</th>
-						<th>JMBAG</th>
-						<th>Ocjena</th>
-					</tr>
-				</thead>
+		<form action="#" th:action="@{/studenti/spremiOcjenu}"
+			th:object="${upisOcjeneDto}" method="POST">
 
-				<tbody>
-					<tr th:each="temp : ${studenti}">
-						<td th:field="${temp.ime}" />
-						<td th:field="${temp.prezime}" />
-						<td th:field="${temp.email}" />
-						<td th:field="${temp.jmbag}" />
-						<td>
-						<input class="form-control" type="number" value="1" min="1" max="5" th:field="${ocjena}">
-						</td>
-						<input type="hidden" class="text-center" th:field="${temp.id}" />
-					</tr>
-				</tbody>
-			</table>
-			<button type="submit" class="btn btn-info col-2">Spremi</button>
+			<label for="student"  class="col-sm-2 col-form-label">Odaberi studenta: </label> 
+			<select id="student" class="form-control" th:field="*{studentId}" >
+				<div th:each="temp : ${studenti}">
+					<option th:value="${temp.id}" th:text="${temp.ime + ' ' + temp.prezime + ', ' + temp.jmbag}"/>
+				</div>
+			</select>
+			
+			<br>
+			
+			<label for="vjezbe"  class="col-sm-2 col-form-label">Odaberi ocjenu: </label> 
+			<select id="vjezbe" class="form-control" th:field="*{ocjena}">
+				<option value="5">Odličan (5)</option>
+				<option value="4">Vrlo dobar (4)</option>
+				<option value="3">Dobar (3)</option>
+				<option value="2">Dovoljan (2)</option>
+				<option value="1">Nedovoljan (1)</option>
+			</select>
+			
+			<br>
+			
+			<button type="submit" class="btn btn-success btn-sm">Upiši ocjenu</button>
 		</form>
 		
 		<hr>
  		<a th:href="@{/studenti/lista}">Povratak na listu studenta</a>
- 		
 	</div>
 </body>
 </html>

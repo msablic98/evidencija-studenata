@@ -1,0 +1,79 @@
+<!DOCTYPE HTML>
+
+<html lang="en" xmlns:th="http://www.thymeleaf.org">
+
+<head>
+<meta charset="utf-8">
+<meta name="viewport"
+	content="width=device-width, initial-scale=1, shrink-to-fit=no">
+
+<!-- Bootstrap CSS -->
+<link rel="stylesheet"
+	href="https://stackpath.bootstrapcdn.com/bootstrap/4.3.1/css/bootstrap.min.css"
+	integrity="sha384-ggOyR0iXCbMQv3Xipma34MD+dH/1fQ784/j6cY/iJTQUOhcWr7x9JvoRxT2MZw1T"
+	crossorigin="anonymous">
+
+
+<title>Evidencija studenata</title>
+</head>
+
+<body>
+
+	<div class="container">
+	
+		<h3 style="text-align:center; margin-top:20px;">Evidencija studenata</h3>
+		<hr>
+		
+		<p class="h4 mb-4 text-center">Uspješni studenti</p>
+		
+		<table class="table table-bordered table-striped">
+			<thead class="thead-dark">
+				<tr>
+					<th>Ime</th>
+					<th>Prezime</th>
+					<th>Email</th>
+					<th>JMBAG</th>
+					<th>Ocjena</th>
+				</tr>
+			</thead>
+	
+			<tbody>
+				<tr th:each="temp : ${uspjesniStudenti}">
+					<td th:text="${temp.ime}" />
+					<td th:text="${temp.prezime}" />
+					<td th:text="${temp.email}" />
+					<td th:text="${temp.jmbag}" />
+					<td th:text="${temp.ocjena}" />
+				</tr>
+			</tbody>
+		</table>
+		
+		<hr>
+		
+		<p class="h4 mb-4 text-center">Neuspješni studenti</p>
+		
+		<table class="table table-bordered table-striped">
+			<thead class="thead-dark">
+				<tr>
+					<th>Ime</th>
+					<th>Prezime</th>
+					<th>Email</th>
+					<th>JMBAG</th>
+				</tr>
+			</thead>
+	
+			<tbody>
+				<tr th:each="temp : ${neuspjesniStudenti}">
+					<td th:text="${temp.ime}" />
+					<td th:text="${temp.prezime}" />
+					<td th:text="${temp.email}" />
+					<td th:text="${temp.jmbag}" />
+				</tr>
+			</tbody>
+		</table>
+		
+		<hr>
+ 		<a th:href="@{/studenti/lista}">Povratak na listu studenta</a>
+	</div>
+</body>
+</html>

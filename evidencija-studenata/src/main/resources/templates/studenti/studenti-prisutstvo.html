@@ -24,6 +24,8 @@
 		<h3 style="text-align: center; margin-top: 20px;">Evidencija
 			studenata</h3>
 		<hr>
+		
+		<p class="h4 mb-4 text-center">Upis prisutstva</p>
 
 		<form action="#" th:action="@{/studenti/spremiPrisutstvo}"
 			th:object="${prisutstvoDto}" method="POST">
@@ -42,31 +44,17 @@
 				<option value="10">Deseta vježba</option>
 			</select>
 			<br>
-			<table class="table table-bordered table-striped">
-				<thead class="thead-dark">
-					<tr>
-						<th>Ime</th>
-						<th>Prezime</th>
-						<th>Email</th>
-						<th>JMBAG</th>
-						<th>Prisutan</th>
-					</tr>
-				</thead>
-
-				<tbody>
-					<tr th:each="temp : ${studenti}">
-						<input type="hidden" th:value="${temp.id}" th:attr="name='studentId', id='studentId'" />
-						<td th:text="${temp.ime}" />
-						<td th:text="${temp.prezime}" />
-						<td th:text="${temp.email}" />
-						<td th:text="${temp.jmbag}" />
-						<td>
-						<button type="submit" class="btn btn-success btn-sm">Dodaj</button>
-						</td>
-					</tr>
-				</tbody>
-			</table>
 			
+			<label for="student"  class="col-sm-2 col-form-label">Odaberi studenta: </label> 
+			<select id="student" class="form-control" th:field="*{studentId}" >
+				<div th:each="temp : ${studenti}">
+					<option th:value="${temp.id}" th:text="${temp.ime + ' ' + temp.prezime + ', ' + temp.jmbag}"/>
+				</div>
+			</select>
+			
+			<br>
+			
+			<button type="submit" class="btn btn-success btn-sm">Dodaj</button>
 		</form>
 		
 		<hr>

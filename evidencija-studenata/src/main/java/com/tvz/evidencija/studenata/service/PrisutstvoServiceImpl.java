@@ -37,6 +37,8 @@ public class PrisutstvoServiceImpl implements PrisutstvoService {
 			for(int i = 0; i < prisutstva.size(); i++) {
 				if(prisutstva.get(i).getBrojVjezbe() == brojVjezbe) {
 					valjanoPrisutstvo = prisutstva.get(i);
+				} else {
+					valjanoPrisutstvo = null;
 				}
 			}
 		} else {
