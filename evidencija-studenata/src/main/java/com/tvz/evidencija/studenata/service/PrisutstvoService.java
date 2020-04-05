@@ -19,10 +19,12 @@ import com.tvz.evidencija.studenata.entity.Prisutstvo;
 
 public interface PrisutstvoService {
 
-	public Prisutstvo getPrisutstvoByBrojVjezbe(int brojVjezbe);
+	public Prisutstvo dohvatiPrisutstvoPoBrojuVjezbe(int brojVjezbe);
 	
-	public List<Prisutstvo> findAll();
+	public List<Prisutstvo> dohvatiSve();
 	
-	public void save(Prisutstvo prisutstvo);
+	public void spremi(Prisutstvo prisutstvo);
+	
+	public void obrisiSve();
 	
 }

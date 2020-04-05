@@ -20,12 +20,14 @@ import com.tvz.evidencija.studenata.entity.Student;
 
 public interface StudentService {
 
-	public List<Student> findAll();
+	public List<Student> dohvatiSve();
 	
-	public Student getStudentById(int id);
+	public Student dohvatiStudentaPoId(int id);
 	
-	public void save(Student student);
+	public void spremi(Student student);
 	
-	public void deleteById(int id);
+	public void obrisiStudentaPoId(int id);
+	
+	public void obrisiSve();
 	
 }

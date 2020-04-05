@@ -32,13 +32,13 @@ public class StudentServiceImpl implements StudentService {
 	private StudentRepository studentRepository;
 	
 	@Override
-	public List<Student> findAll() {
+	public List<Student> dohvatiSve() {
 
 		return studentRepository.findAll();
 	}
 
 	@Override
-	public Student getStudentById(int id) {
+	public Student dohvatiStudentaPoId(int id) {
 
 		Optional<Student> student =  studentRepository.findById(id);
 	
@@ -53,15 +53,22 @@ public class StudentServiceImpl implements StudentService {
 	}
 
 	@Override
-	public void save(Student student) {
+	public void spremi(Student student) {
 
 		studentRepository.save(student);
 	}
 
 	@Override
-	public void deleteById(int id) {
+	public void obrisiStudentaPoId(int id) {
 
 		studentRepository.deleteById(id);
+	}
+	
+	@Override
+	public void obrisiSve() {
+		
+		studentRepository.deleteAll();
+		
 	}
 
 }

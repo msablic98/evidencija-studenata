@@ -32,19 +32,19 @@ public class PrisutstvoServiceImpl implements PrisutstvoService {
 	private PrisutstvoRepository prisutstvoRepository;
 	
 	@Override
-	public List<Prisutstvo> findAll() {
+	public List<Prisutstvo> dohvatiSve() {
 
 		return prisutstvoRepository.findAll();
 	}
 
 	@Override
-	public void save(Prisutstvo prisutstvo) {
+	public void spremi(Prisutstvo prisutstvo) {
 
 		prisutstvoRepository.save(prisutstvo);
 	}
 	
 	@Override
-	public Prisutstvo getPrisutstvoByBrojVjezbe(int brojVjezbe) {
+	public Prisutstvo dohvatiPrisutstvoPoBrojuVjezbe(int brojVjezbe) {
 		
 		List<Prisutstvo> prisutstva =  prisutstvoRepository.findAll();
 		Prisutstvo valjanoPrisutstvo = new Prisutstvo();
@@ -67,6 +67,13 @@ public class PrisutstvoServiceImpl implements PrisutstvoService {
 		}
 		
 		return valjanoPrisutstvo;
+	}
+	
+	@Override
+	public void obrisiSve() {
+		
+		prisutstvoRepository.deleteAll();
+		
 	}
 
 }

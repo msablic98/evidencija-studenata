@@ -55,7 +55,7 @@ public class StudentController {
 		/**
 			Nije potreban try/catch jer u slučaju da zapisa nema vraća se null.
 		**/
-		List<Student> studenti = studentService.findAll();
+		List<Student> studenti = studentService.dohvatiSve();
 		
 		model.addAttribute("studenti", studenti);
 		
@@ -80,7 +80,7 @@ public class StudentController {
 		/**
 			Nije potreban try/catch jer se na frontendu vrši provjera unesenih podataka.
 		**/
-		studentService.save(student);
+		studentService.spremi(student);
 		
 		return "redirect:/studenti/lista";
 	}
@@ -92,7 +92,7 @@ public class StudentController {
 		Student student = new Student();
 		
 		try {
-			student = studentService.getStudentById(id);
+			student = studentService.dohvatiStudentaPoId(id);
 		} catch (RuntimeException e) {
 			LOGGER.error("Iznimka u dohvaćanju studenta sa ID-jem: " + id, e.getMessage());
 		}
@@ -106,12 +106,12 @@ public class StudentController {
 	public String obrisiStudenta(@RequestParam("studentId") int id) {
 		LOGGER.debug("Zahtjev za brisanje studenta sa ID-jem: ", id);
 		
-		Student student = studentService.getStudentById(id);
+		Student student = studentService.dohvatiStudentaPoId(id);
 		
 		if(student.isEvidentiran()) {
 			// Ništa se ne događa jer je za studenta već prijavljena pristunost i ne može se obrisati.
 		} else {
-			studentService.deleteById(id);
+			studentService.obrisiStudentaPoId(id);
 		}
 		
 		return "redirect:/studenti/lista";
@@ -124,7 +124,7 @@ public class StudentController {
 		/**
 			Nije potreban try/catch jer u slučaju da zapisa nema vraća se null.
 		**/
-		List<Student> studenti = studentService.findAll();
+		List<Student> studenti = studentService.dohvatiSve();
 		PrisutstvoDto prisutstvoDto = new PrisutstvoDto();
 		
 		
@@ -143,19 +143,20 @@ public class StudentController {
 		
 		if(prisutstvoDto.getStudentId() != 0) {
 			try {
-				Prisutstvo postojecePrisutstvo = prisutstvoService.getPrisutstvoByBrojVjezbe(prisutstvoDto.getBrojVjezbe());
-				Student student = studentService.getStudentById(prisutstvoDto.getStudentId());
+				Prisutstvo postojecePrisutstvo = prisutstvoService.dohvatiPrisutstvoPoBrojuVjezbe(prisutstvoDto.getBrojVjezbe());
+				Student student = studentService.dohvatiStudentaPoId(prisutstvoDto.getStudentId());
 				
 				if(postojecePrisutstvo != null) {
-					if(postojecePrisutstvo.getStudenti().contains(studentService.getStudentById(prisutstvoDto.getStudentId()))) {
+					if(postojecePrisutstvo.getStudenti().contains(studentService.dohvatiStudentaPoId(prisutstvoDto.getStudentId()))) {
 						// Ništa se ne događa jer ako student postoji u klasi za određenu vježbu, ne dodaje se ponovno.
 					} else {
-						postojecePrisutstvo.getStudenti().add(studentService.getStudentById(prisutstvoDto.getStudentId()));
+						postojecePrisutstvo.getStudenti().add(studentService.dohvatiStudentaPoId(prisutstvoDto.getStudentId()));
 						prisutstvo = postojecePrisutstvo;
+						student.setEvidentiran(true);
 					}
 				} else {
 					prisutstvo.setBrojVjezbe(prisutstvoDto.getBrojVjezbe());
-					prisutstvo.setStudenti(List.of(studentService.getStudentById(prisutstvoDto.getStudentId())));
+					prisutstvo.setStudenti(List.of(studentService.dohvatiStudentaPoId(prisutstvoDto.getStudentId())));
 					student.setEvidentiran(true);
 				}
 			} catch (Exception e) {
@@ -165,7 +166,7 @@ public class StudentController {
 			prisutstvo.setBrojVjezbe(prisutstvoDto.getBrojVjezbe());
 		}
 		
-		prisutstvoService.save(prisutstvo);
+		prisutstvoService.spremi(prisutstvo);
 		
 		return "redirect:/studenti/upisiPristustvo";
 	}
@@ -174,14 +175,14 @@ public class StudentController {
 	public String upisiOcjenu(Model model) {
 		LOGGER.debug("Zahtjev za upis ocjene");
 		
-		List<Prisutstvo> prisutstva = prisutstvoService.findAll();
+		List<Prisutstvo> prisutstva = prisutstvoService.dohvatiSve();
 		UpisOcjeneDto upisOcjeneDto = new UpisOcjeneDto();
 		
 		HashMap<Integer,List<Student>> studenti = new HashMap<>();
 		HashMap<Student,Integer> brojDolazaka = new HashMap<>();
 		List<Student> studentiZaUpis = new ArrayList<>();
 		
-		List<Student> sviStudenti = studentService.findAll();
+		List<Student> sviStudenti = studentService.dohvatiSve();
 		
 		/**
 			Iteriramo kroz postojeća prisutstva i punimo hashmapu studenti sa brojem vježbe kao ključ.
@@ -213,13 +214,13 @@ public class StudentController {
 
 			/** 
 				Iteriramo kroz listu svih dohvaćenih studenata te ako je neki student pronađen u mapi brojDolazaka
-				provjerava se je li broj dolazaka tog studenta veći ili jednak 6 od 10. 
+				provjerava se je li broj dolazaka tog studenta veći ili jednak 6 od 10 dolazaka. 
 				Ako je dodaje se u mapu studentiZaUpis koja se vraća na upis ocjene.
 				Ako nije, odbacuje se.
 			**/
 			for(int i = 0; i < sviStudenti.size(); i++) {
 				if(brojDolazaka.get(sviStudenti.get(i)) != null) {
-					if(brojDolazaka.get(sviStudenti.get(i)) >= 2) {
+					if(brojDolazaka.get(sviStudenti.get(i)) >= 6) {
 						studentiZaUpis.add(sviStudenti.get(i));
 					}
 				}
@@ -237,9 +238,9 @@ public class StudentController {
 		LOGGER.debug("Zahtjev za spremanje ocjene za studenta sa ID-jem: ", upisOcjeneDto.getStudentId());
 		
 		try {
-			Student student = studentService.getStudentById(upisOcjeneDto.getStudentId());
+			Student student = studentService.dohvatiStudentaPoId(upisOcjeneDto.getStudentId());
 			student.setOcjena(upisOcjeneDto.getOcjena());
-			studentService.save(student);
+			studentService.spremi(student);
 		} catch (Exception e) {
 			LOGGER.error("Iznimka u upisu ocjene za studenta sa ID-jem: " + upisOcjeneDto.getStudentId(), e.getMessage());
 		}
@@ -256,7 +257,7 @@ public class StudentController {
 		   Ako nisu, pokazuje se poruka da se moraju evidentirati sve vježbe i ocjene.
 		**/
 		boolean uneseneSveVjezbe = false;
-		List<Prisutstvo> prisutstva = prisutstvoService.findAll();
+		List<Prisutstvo> prisutstva = prisutstvoService.dohvatiSve();
 		if(prisutstva.size() == 10) {
 			uneseneSveVjezbe = true;
 		}
@@ -265,7 +266,7 @@ public class StudentController {
 		List<Student> neuspjesniStudenti = new ArrayList<>();
 		
 		try {
-			List<Student> studenti = studentService.findAll();
+			List<Student> studenti = studentService.dohvatiSve();
 			/**
 			 	Iteriramo kroz listu svih studenata te ako je studentu ocjena 0 (nije unesena) ili 1 (nedovoljan) dodaje se u mapu neuspjesniStudenti.
 			 	U protivnom, student se dodaje u listu uspjesniStudenti.
@@ -295,7 +296,7 @@ public class StudentController {
         List<Student> studentiZaIzvoz = new ArrayList<Student>(); 
         
         try {
-			List<Student> studenti = studentService.findAll();
+			List<Student> studenti = studentService.dohvatiSve();
 			/**
 			 	Iteriramo kroz listu svih studenata te ako je studentu ocjena 0 (nije unesena) ili 1 (nedovoljan) ne izvozi se u Excel.
 			**/	
@@ -321,7 +322,7 @@ public class StudentController {
         List<Student> studentiZaIzvoz = new ArrayList<Student>(); 
         
         try {
-			List<Student> studenti = studentService.findAll();
+			List<Student> studenti = studentService.dohvatiSve();
 			/**
 			 	Iteriramo kroz listu svih studenata te ako je studentu ocjena 0 (nije unesena) ili 1 (nedovoljan) izvozi se u Excel.
 			**/
@@ -341,4 +342,13 @@ public class StudentController {
         return new ModelAndView(new IzvozExcel(), "studentiZaIzvoz", studentiZaIzvoz);
 	}
 	
+	@GetMapping("/obrisiSve")
+	public String obrisiSve() {
+		
+		prisutstvoService.obrisiSve();
+		
+		studentService.obrisiSve();
+		
+		return "redirect:/studenti/lista";
+	}
 }
