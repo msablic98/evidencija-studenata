@@ -4,6 +4,8 @@ import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
@@ -36,6 +38,8 @@ import com.tvz.evidencija.studenata.service.StudentService;
 @RequestMapping("/studenti")
 public class StudentController {
 	
+	private static final Logger LOGGER = LoggerFactory.getLogger(StudentController.class);
+	
 	@Autowired
 	private StudentService studentService;
 	
@@ -44,6 +48,7 @@ public class StudentController {
 	
 	@GetMapping("/lista")
 	public String getLista(Model model) {
+		LOGGER.debug("Zahtjev za dohvaćanjem liste studenata");
 		
 		/**
 			Nije potreban try/catch jer u slučaju da zapisa nema vraća se null.
@@ -57,6 +62,7 @@ public class StudentController {
 	
 	@GetMapping("/formaZaDodavanje")
 	public String formaZaDodavanje(Model model) {
+		LOGGER.debug("Zahtjev za unošenje novog studenta");
 		
 		Student student = new Student();
 		
@@ -67,6 +73,7 @@ public class StudentController {
 	
 	@PostMapping("/spremiStudenta")
 	public String spremiStudenta(@ModelAttribute("student") Student student) {
+		LOGGER.debug("Zahtjev za spremanje studenta: ", student.getIme() + student.getPrezime());
 		
 		/**
 			Nije potreban try/catch jer se na frontendu vrši provjera unesenih podataka.
@@ -78,13 +85,14 @@ public class StudentController {
 	
 	@GetMapping("/formaZaAzuriranje")
 	public String formaZaAzuriranje(@RequestParam("studentId") int id, Model model) {
+		LOGGER.debug("Zahtjev za ažuriranje studenta sa ID-jem: ", id);
 		
 		Student student = new Student();
 		
 		try {
 			student = studentService.getStudentById(id);
 		} catch (RuntimeException e) {
-			System.out.println(e.getMessage());
+			LOGGER.error("Iznimka u dohvaćanju studenta sa ID-jem: " + id, e.getMessage());
 		}
 		
 		model.addAttribute("student", student);
@@ -94,6 +102,7 @@ public class StudentController {
 	
 	@GetMapping("/obrisiStudenta")
 	public String obrisiStudenta(@RequestParam("studentId") int id) {
+		LOGGER.debug("Zahtjev za brisanje studenta sa ID-jem: ", id);
 		
 		/**
 			Nije potreban try/catch jer u slučaju da zapis ne postoji ignorira se.
@@ -105,6 +114,7 @@ public class StudentController {
 	
 	@GetMapping("/upisiPristustvo")
 	public String upisiPrisutstvo(Model model) {
+		LOGGER.debug("Zahtjev za upis pristustva");
 		
 		/**
 			Nije potreban try/catch jer u slučaju da zapisa nema vraća se null.
@@ -122,6 +132,7 @@ public class StudentController {
 	
 	@PostMapping("/spremiPrisutstvo")
 	public String spremiPrisutstvo(@ModelAttribute("prisutstvoDto") PrisutstvoDto prisutstvoDto) {
+		LOGGER.debug("Zahtjev za upis prisutstva za studenta sa ID-jem: ", prisutstvoDto.getStudentId());
 		
 		try {
 			Prisutstvo prisutstvo = new Prisutstvo();
@@ -143,7 +154,7 @@ public class StudentController {
 			
 			prisutstvoService.save(prisutstvo);
 		} catch (Exception e) {
-			System.out.println(e.getMessage());
+			LOGGER.error("Iznimka u upisu prisutstva za studenta sa ID-jem: " + prisutstvoDto.getStudentId(), e.getMessage());
 		}
 		
 		return "redirect:/studenti/upisiPristustvo";
@@ -151,6 +162,7 @@ public class StudentController {
 	
 	@GetMapping("/upisiOcjenu")
 	public String upisiOcjenu(Model model) {
+		LOGGER.debug("Zahtjev za upis ocjene");
 		
 		List<Prisutstvo> prisutstva = prisutstvoService.findAll();
 		UpisOcjeneDto upisOcjeneDto = new UpisOcjeneDto();
@@ -212,13 +224,14 @@ public class StudentController {
 	
 	@PostMapping("/spremiOcjenu")
 	public String spremiOcjenu(@ModelAttribute("upisOcjeneDto") UpisOcjeneDto upisOcjeneDto) {
+		LOGGER.debug("Zahtjev za spremanje ocjene za studenta sa ID-jem: ", upisOcjeneDto.getStudentId());
 		
 		try {
 			Student student = studentService.getStudentById(upisOcjeneDto.getStudentId());
 			student.setOcjena(upisOcjeneDto.getOcjena());
 			studentService.save(student);
 		} catch (Exception e) {
-			System.out.println(e.getMessage());
+			LOGGER.error("Iznimka u upisu ocjene za studenta sa ID-jem: " + upisOcjeneDto.getStudentId(), e.getMessage());
 		}
 		
 		return "redirect:/studenti/upisiOcjenu";
@@ -226,6 +239,7 @@ public class StudentController {
 	
 	@GetMapping("/pregledOcjena")
 	public String pregledOcjena(Model model) {
+		LOGGER.debug("Zahtjev za pregled ocjena studenata");
 		
 		List<Student> uspjesniStudenti = new ArrayList<>();
 		List<Student> neuspjesniStudenti = new ArrayList<>();
@@ -245,7 +259,7 @@ public class StudentController {
 				}
 			}
 		} catch (Exception e) {
-			System.out.println(e.getMessage());
+			LOGGER.error("Iznimka u dohvatu pregleda ocjena", e.getMessage());
 		}
 		
 		model.addAttribute("uspjesniStudenti", uspjesniStudenti);
