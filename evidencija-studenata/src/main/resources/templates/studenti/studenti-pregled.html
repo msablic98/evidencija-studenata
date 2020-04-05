@@ -24,56 +24,64 @@
 		<h3 style="text-align:center; margin-top:20px;">Evidencija studenata</h3>
 		<hr>
 		
-		<p class="h4 mb-4 text-center">Uspješni studenti</p>
+		<div th:if="${uneseneSveVjezbe} == false">
+			<h2 class="text-center">Nisu evidentirane sve vježbe ili ocjene, unesi <a th:href="@{/studenti/upisiPristustvo}">vježbe</a> ili <a th:href="@{/studenti/upisiOcjenu}">ocjene</a>.</h2>
+		</div>
 		
-		<table class="table table-bordered table-striped">
-			<thead class="thead-dark">
-				<tr>
-					<th>Ime</th>
-					<th>Prezime</th>
-					<th>Email</th>
-					<th>JMBAG</th>
-					<th>Ocjena</th>
-				</tr>
-			</thead>
-	
-			<tbody>
-				<tr th:each="temp : ${uspjesniStudenti}">
-					<td th:text="${temp.ime}" />
-					<td th:text="${temp.prezime}" />
-					<td th:text="${temp.email}" />
-					<td th:text="${temp.jmbag}" />
-					<td th:text="${temp.ocjena}" />
-				</tr>
-			</tbody>
-		</table>
+		<div th:if="${uneseneSveVjezbe} == true">
+			<p class="h4 mb-4 text-center">Uspješni studenti</p>
+			
+			<table class="table table-bordered table-striped text-center">
+				<thead class="thead-dark">
+					<tr>
+						<th>Ime</th>
+						<th>Prezime</th>
+						<th>Email</th>
+						<th>JMBAG</th>
+						<th>Ocjena</th>
+					</tr>
+				</thead>
 		
+				<tbody>
+					<tr th:each="temp : ${uspjesniStudenti}">
+						<td th:text="${temp.ime}" />
+						<td th:text="${temp.prezime}" />
+						<td th:text="${temp.email}" />
+						<td th:text="${temp.jmbag}" />
+						<td th:text="${temp.ocjena}" />
+					</tr>
+				</tbody>
+			</table>
+			
+			<hr>
+			
+			<p class="h4 mb-4 text-center">Neuspješni studenti</p>
+			
+			<table class="table table-bordered table-striped text-center">
+				<thead class="thead-dark">
+					<tr>
+						<th>Ime</th>
+						<th>Prezime</th>
+						<th>Email</th>
+						<th>JMBAG</th>
+					</tr>
+				</thead>
+		
+				<tbody>
+					<tr th:each="temp : ${neuspjesniStudenti}">
+						<td th:text="${temp.ime}" />
+						<td th:text="${temp.prezime}" />
+						<td th:text="${temp.email}" />
+						<td th:text="${temp.jmbag}" />
+					</tr>
+				</tbody>
+			</table>
+		</div>
+
 		<hr>
-		
-		<p class="h4 mb-4 text-center">Neuspješni studenti</p>
-		
-		<table class="table table-bordered table-striped">
-			<thead class="thead-dark">
-				<tr>
-					<th>Ime</th>
-					<th>Prezime</th>
-					<th>Email</th>
-					<th>JMBAG</th>
-				</tr>
-			</thead>
-	
-			<tbody>
-				<tr th:each="temp : ${neuspjesniStudenti}">
-					<td th:text="${temp.ime}" />
-					<td th:text="${temp.prezime}" />
-					<td th:text="${temp.email}" />
-					<td th:text="${temp.jmbag}" />
-				</tr>
-			</tbody>
-		</table>
-		
-		<hr>
- 		<a th:href="@{/studenti/lista}">Povratak na listu studenta</a>
+		<center>
+ 		<a th:href="@{/studenti/lista}">Povratak na listu studenata</a>
+ 		</center>
 	</div>
 </body>
 </html>

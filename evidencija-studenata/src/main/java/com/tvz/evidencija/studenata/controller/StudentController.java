@@ -104,10 +104,13 @@ public class StudentController {
 	public String obrisiStudenta(@RequestParam("studentId") int id) {
 		LOGGER.debug("Zahtjev za brisanje studenta sa ID-jem: ", id);
 		
-		/**
-			Nije potreban try/catch jer u slučaju da zapis ne postoji ignorira se.
-		**/
-		studentService.deleteById(id);
+		Student student = studentService.getStudentById(id);
+		
+		if(student.isEvidentiran()) {
+			// Ništa se ne događa jer je za studenta već prijavljena pristunost i ne može se obrisati.
+		} else {
+			studentService.deleteById(id);
+		}
 		
 		return "redirect:/studenti/lista";
 	}
@@ -137,6 +140,7 @@ public class StudentController {
 		try {
 			Prisutstvo prisutstvo = new Prisutstvo();
 			Prisutstvo postojecePrisutstvo = prisutstvoService.getPrisutstvoByBrojVjezbe(prisutstvoDto.getBrojVjezbe());
+			Student student = studentService.getStudentById(prisutstvoDto.getStudentId());
 			
 			if(postojecePrisutstvo != null) {
 				if(postojecePrisutstvo.getStudenti().contains(studentService.getStudentById(prisutstvoDto.getStudentId()))) {
@@ -150,6 +154,7 @@ public class StudentController {
 				
 				prisutstvo.setBrojVjezbe(prisutstvoDto.getBrojVjezbe());
 				prisutstvo.setStudenti(List.of(studentService.getStudentById(prisutstvoDto.getStudentId())));
+				student.setEvidentiran(true);
 			}
 			
 			prisutstvoService.save(prisutstvo);
@@ -176,7 +181,7 @@ public class StudentController {
 		/**
 			Iteriramo kroz postojeća prisutstva i punimo hashmapu studenti sa brojem vježbe kao ključ.
 		**/
-		if(prisutstva.size() == 3) {
+		if(prisutstva.size() == 10) {
 			for(int i=0; i<prisutstva.size(); i++) {
 				studenti.put(i,prisutstva.get(i).getStudenti());
 			}
@@ -241,6 +246,16 @@ public class StudentController {
 	public String pregledOcjena(Model model) {
 		LOGGER.debug("Zahtjev za pregled ocjena studenata");
 		
+		/**
+		   Provjera ako su unesene sve vježbe, ako jesu prikazati ćemo tablicu studenata.
+		   Ako nisu, pokazuje se poruka da se moraju evidentirati sve vježbe i ocjene.
+		**/
+		boolean uneseneSveVjezbe = false;
+		List<Prisutstvo> prisutstva = prisutstvoService.findAll();
+		if(prisutstva.size() == 10) {
+			uneseneSveVjezbe = true;
+		}
+		
 		List<Student> uspjesniStudenti = new ArrayList<>();
 		List<Student> neuspjesniStudenti = new ArrayList<>();
 		
@@ -264,6 +279,7 @@ public class StudentController {
 		
 		model.addAttribute("uspjesniStudenti", uspjesniStudenti);
 		model.addAttribute("neuspjesniStudenti", neuspjesniStudenti);
+		model.addAttribute("uneseneSveVjezbe", uneseneSveVjezbe);
 		
 		return "studenti/studenti-pregled";
 	}

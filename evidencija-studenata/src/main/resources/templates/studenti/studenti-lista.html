@@ -24,38 +24,46 @@
 		<h3 style="text-align:center; margin-top:20px;">Evidencija studenata</h3>
 		<hr>
 		
-		<a th:href="@{/studenti/formaZaDodavanje}" class="btn btn-primary btn-sm mb-3">Dodaj studenta</a>
-		<a th:href="@{/studenti/upisiPristustvo}" class="btn btn-primary btn-sm mb-3">Prisutstvo</a>
-		<a th:href="@{/studenti/upisiOcjenu}" class="btn btn-primary btn-sm mb-3">Upis ocjene</a>
-		<a th:href="@{/studenti/pregledOcjena}" class="btn btn-primary btn-sm mb-3">Pregled upisanih ocjena</a>
+		<div th:if="${#lists.isEmpty(studenti)}">
+			<h2 class="text-center">Nema dostupnih studenata, <a th:href="@{/studenti/formaZaDodavanje}">dodajte novog</a>.</h2>
+		</div>
 		
-		<table class="table table-bordered table-striped">
-			<thead class="thead-dark">
-				<tr>
-					<th>Ime</th>
-					<th>Prezime</th>
-					<th>Email</th>
-					<th>JMBAG</th>
-					<th>Akcija</th>
-				</tr>
-			</thead>
-	
-			<tbody>
-				<tr th:each="temp : ${studenti}">
-					<td th:text="${temp.ime}" />
-					<td th:text="${temp.prezime}" />
-					<td th:text="${temp.email}" />
-					<td th:text="${temp.jmbag}" />
-					<td>
-						<a th:href="@{/studenti/formaZaAzuriranje(studentId=${temp.id})}" class="btn btn-info btn-sm">Ažuriraj</a>
-						
-						<a th:href="@{/studenti/obrisiStudenta(studentId=${temp.id})}" class="btn btn-danger btn-sm"
-						onClick="if (!(confirm('Jeste li sigurani da želite obrisati studenta?'))) return false">Obriši</a>
-					</td>
-				</tr>
-			</tbody>
-		</table>
+		<div th:if="${not #lists.isEmpty(studenti)}">
+			<center>
+				<a th:href="@{/studenti/formaZaDodavanje}" class="btn btn-primary btn-sm mb-3">Dodaj studenta</a>
+				<a th:href="@{/studenti/upisiPristustvo}" class="btn btn-primary btn-sm mb-3">Prisutstvo</a>
+				<a th:href="@{/studenti/upisiOcjenu}" class="btn btn-primary btn-sm mb-3">Upis ocjene</a>
+				<a th:href="@{/studenti/pregledOcjena}" class="btn btn-primary btn-sm mb-3">Pregled upisanih ocjena</a>
+			</center>
+			
+			<table class="table table-bordered table-striped text-center">
+				<thead class="thead-dark">
+					<tr>
+						<th>Ime</th>
+						<th>Prezime</th>
+						<th>Email</th>
+						<th>JMBAG</th>
+						<th>Akcija</th>
+					</tr>
+				</thead>
 		
+				<tbody>
+					<tr th:each="temp : ${studenti}">
+						<td th:text="${temp.ime}" />
+						<td th:text="${temp.prezime}" />
+						<td th:text="${temp.email}" />
+						<td th:text="${temp.jmbag}" />
+						<td>
+							<a th:href="@{/studenti/formaZaAzuriranje(studentId=${temp.id})}" class="btn btn-info btn-sm">Ažuriraj</a>
+							<th:block th:if="${temp.evidentiran} == false">
+								<a th:href="@{/studenti/obrisiStudenta(studentId=${temp.id})}" class="btn btn-danger btn-sm"
+								onClick="if (!(confirm('Jeste li sigurani da želite obrisati studenta?'))) return false">Obriši</a>
+							</th:block>
+						</td>
+					</tr>
+				</tbody>
+			</table>
+		</div>
 	</div>
 </body>
 </html>

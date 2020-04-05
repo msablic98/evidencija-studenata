@@ -26,40 +26,47 @@
 		<hr>
 		
 		<p class="h4 mb-4 text-center">Upis prisutstva</p>
-
-		<form action="#" th:action="@{/studenti/spremiPrisutstvo}"
-			th:object="${prisutstvoDto}" method="POST">
-
-			<label for="vjezbe"  class="col-sm-2 col-form-label">Odaberi vježbu: </label> 
-			<select id="vjezbe" class="form-control" th:field="*{brojVjezbe}">
-				<option value="1">Prva vježba</option>
-				<option value="2">Druga vježba</option>
-				<option value="3">Treća vježba</option>
-				<option value="4">Četvrta vježba</option>
-				<option value="5">Peta vježba</option>
-				<option value="6">Šesta vježba</option>
-				<option value="7">Sedma vježba</option>
-				<option value="8">Osma vježba</option>
-				<option value="9">Deveta vježba</option>
-				<option value="10">Deseta vježba</option>
-			</select>
-			<br>
-			
-			<label for="student"  class="col-sm-2 col-form-label">Odaberi studenta: </label> 
-			<select id="student" class="form-control" th:field="*{studentId}" >
-				<div th:each="temp : ${studenti}">
-					<option th:value="${temp.id}" th:text="${temp.ime + ' ' + temp.prezime + ', ' + temp.jmbag}"/>
-				</div>
-			</select>
-			
-			<br>
-			
-			<button type="submit" class="btn btn-success btn-sm">Dodaj</button>
-		</form>
 		
-		<hr>
- 		<a th:href="@{/studenti/lista}">Povratak na listu studenta</a>
+		<div class="row">
+			<div class="col-md-3"></div>
+				<div class="col-md-6">
+					<form action="#" th:action="@{/studenti/spremiPrisutstvo}"
+						th:object="${prisutstvoDto}" method="POST">
+			
+						<label for="vjezbe"  class="col-form-label">Odaberi vježbu: </label> 
+						<select id="vjezbe" class="form-control" th:field="*{brojVjezbe}">
+							<option value="1">Prva vježba</option>
+							<option value="2">Druga vježba</option>
+							<option value="3">Treća vježba</option>
+							<option value="4">Četvrta vježba</option>
+							<option value="5">Peta vježba</option>
+							<option value="6">Šesta vježba</option>
+							<option value="7">Sedma vježba</option>
+							<option value="8">Osma vježba</option>
+							<option value="9">Deveta vježba</option>
+							<option value="10">Deseta vježba</option>
+						</select>
+						<br>
+						
+						<label for="student"  class="col-form-label">Odaberi studenta: </label> 
+						<select id="student" class="form-control" th:field="*{studentId}" >
+							<div th:each="temp : ${studenti}">
+								<option th:value="${temp.id}" th:text="${temp.ime + ' ' + temp.prezime + ', ' + temp.jmbag}"/>
+							</div>
+						</select>
+						
+						<br>
+						<center>
+						<button type="submit" class="btn btn-success btn-sm">Dodaj</button>
+						</center>
+					</form>
+		 	</div>
+ 		</div>
  		
+		<hr>
+		<center>
+ 		<a th:href="@{/studenti/lista}" style="text-align:center;">Povratak na listu studenata</a>
+ 		</center>
 	</div>
 </body>
 </html>

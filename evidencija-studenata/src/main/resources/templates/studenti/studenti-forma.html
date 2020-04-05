@@ -30,17 +30,17 @@
 		 	<form action="#" th:action="@{/studenti/spremiStudenta}"
 		 					 th:object="${student}" method="POST">
 		 		<input type="hidden" th:field="*{id}" />
-		 		<input type="text" th:field="*{ime}" class="form-control mb-4 col-4" placeholder="Ime" />
-		 		<input type="text" th:field="*{prezime}" class="form-control mb-4 col-4" placeholder="Prezime" />
-		 		<input type="text" th:field="*{email}" class="form-control mb-4 col-4" placeholder="Email" />
-		 		<input type="text" th:field="*{jmbag}" class="form-control mb-4 col-4" placeholder="JMBAG" />
+		 		<input type="text" th:field="*{ime}" class="form-control mb-4 col-4" placeholder="Ime" required />
+		 		<input type="text" th:field="*{prezime}" class="form-control mb-4 col-4" placeholder="Prezime" required />
+		 		<input type="email" th:field="*{email}" class="form-control mb-4 col-4" placeholder="Email" required />
+		 		<input type="text" th:field="*{jmbag}" class="form-control mb-4 col-4" pattern="\d*" maxlength="10" minlength="10" placeholder="JMBAG" required />
 		 		<button type="submit" class="btn btn-info col-2">Spremi</button>
 		 	</form>
 		</center>
 		
  		<hr>
  		
- 		<a th:href="@{/studenti/lista}">Povratak na listu studenta</a>
+ 		<a th:href="@{/studenti/lista}">Povratak na listu studenata</a>
 	 </div>
 
 </body>

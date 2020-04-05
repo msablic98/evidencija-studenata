@@ -24,37 +24,51 @@
 		<h3 style="text-align: center; margin-top: 20px;">Evidencija
 			studenata</h3>
 		<hr>
-
-		<p class="h4 mb-4 text-center">Upis ocjene</p>
-
-		<form action="#" th:action="@{/studenti/spremiOcjenu}"
-			th:object="${upisOcjeneDto}" method="POST">
-
-			<label for="student"  class="col-sm-2 col-form-label">Odaberi studenta: </label> 
-			<select id="student" class="form-control" th:field="*{studentId}" >
-				<div th:each="temp : ${studenti}">
-					<option th:value="${temp.id}" th:text="${temp.ime + ' ' + temp.prezime + ', ' + temp.jmbag}"/>
+	
+		<div th:if="${#lists.isEmpty(studenti)}">
+			<h2 class="text-center">Nije evidentirana prisutnost za sve vježbe, <a th:href="@{/studenti/upisiPristustvo}">unesi prisutnost</a>.</h2>
+		</div>	
+			
+		<div th:if="${not #lists.isEmpty(studenti)}">	
+			<p class="h4 mb-4 text-center">Upis ocjene</p>
+	
+		<div class="row">
+			<div class="col-md-3"></div>
+				<div class="col-md-6">
+					<form action="#" th:action="@{/studenti/spremiOcjenu}"
+						th:object="${upisOcjeneDto}" method="POST">
+			
+						<label for="student"  class="col-form-label">Odaberi studenta: </label> 
+						<select id="student" class="form-control" th:field="*{studentId}" >
+							<div th:each="temp : ${studenti}">
+								<option th:value="${temp.id}" th:text="${temp.ime + ' ' + temp.prezime + ', ' + temp.jmbag}"/>
+							</div>
+						</select>
+						
+						<br>
+						
+						<label for="vjezbe"  class="col-form-label">Odaberi ocjenu: </label> 
+						<select id="vjezbe" class="form-control" th:field="*{ocjena}">
+							<option value="5">Odličan (5)</option>
+							<option value="4">Vrlo dobar (4)</option>
+							<option value="3">Dobar (3)</option>
+							<option value="2">Dovoljan (2)</option>
+							<option value="1">Nedovoljan (1)</option>
+						</select>
+						
+						<br>
+						<center>
+						<button type="submit" class="btn btn-success btn-sm">Upiši ocjenu</button>
+						</center>
+					</form>
 				</div>
-			</select>
-			
-			<br>
-			
-			<label for="vjezbe"  class="col-sm-2 col-form-label">Odaberi ocjenu: </label> 
-			<select id="vjezbe" class="form-control" th:field="*{ocjena}">
-				<option value="5">Odličan (5)</option>
-				<option value="4">Vrlo dobar (4)</option>
-				<option value="3">Dobar (3)</option>
-				<option value="2">Dovoljan (2)</option>
-				<option value="1">Nedovoljan (1)</option>
-			</select>
-			
-			<br>
-			
-			<button type="submit" class="btn btn-success btn-sm">Upiši ocjenu</button>
-		</form>
-		
+			</div>
+ 		</div>
+ 		
 		<hr>
- 		<a th:href="@{/studenti/lista}">Povratak na listu studenta</a>
+ 		<center>
+ 		<a th:href="@{/studenti/lista}">Povratak na listu studenata</a>
+ 		</center>
 	</div>
 </body>
 </html>

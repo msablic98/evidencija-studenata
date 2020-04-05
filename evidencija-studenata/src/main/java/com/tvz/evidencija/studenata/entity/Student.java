@@ -43,6 +43,9 @@ public class Student {
 	@Column(name="ocjena")
 	private int ocjena;
 	
+	@Column(name="evidentiran")
+	private boolean evidentiran;
+	
 	public Student() {
 		
 	}
@@ -104,11 +107,19 @@ public class Student {
 	public void setOcjena(int ocjena) {
 		this.ocjena = ocjena;
 	}
+	
+	public boolean isEvidentiran() {
+		return evidentiran;
+	}
+
+	public void setEvidentiran(boolean evidentiran) {
+		this.evidentiran = evidentiran;
+	}
 
 	@Override
 	public String toString() {
 		return "Student [id=" + id + ", ime=" + ime + ", prezime=" + prezime + ", email=" + email + ", jmbag=" + jmbag
-				+ ", ocjena=" + ocjena + "]";
+				+ ", ocjena=" + ocjena + ", evidentiran=" + evidentiran + "]";
 	}
 
 }
