@@ -20,6 +20,18 @@ import com.tvz.evidencija.studenata.entity.Student;
 import com.tvz.evidencija.studenata.service.PrisutstvoService;
 import com.tvz.evidencija.studenata.service.StudentService;
 
+/**
+ * 
+ * @author msablic
+ *
+ * Controller klase sadrže logiku aplikacije te su odgovorne za tok procesa aplikacije. 
+ * 
+ * U našem slučaju, StudentController klasa odgovorna je za sve upite koji se šalju na /student endpoint.
+ * 
+ * Ovisno o nastavku endpoint-a, ( /lista, /spremiStudenta...) odvija se logika mapirana na taj endpoint.
+ * 
+ */
+
 @Controller
 @RequestMapping("/studenti")
 public class StudentController {
@@ -33,6 +45,9 @@ public class StudentController {
 	@GetMapping("/lista")
 	public String getLista(Model model) {
 		
+		/**
+			Nije potreban try/catch jer u slučaju da zapisa nema vraća se null.
+		**/
 		List<Student> studenti = studentService.findAll();
 		
 		model.addAttribute("studenti", studenti);
@@ -53,6 +68,9 @@ public class StudentController {
 	@PostMapping("/spremiStudenta")
 	public String spremiStudenta(@ModelAttribute("student") Student student) {
 		
+		/**
+			Nije potreban try/catch jer se na frontendu vrši provjera unesenih podataka.
+		**/
 		studentService.save(student);
 		
 		return "redirect:/studenti/lista";
@@ -61,7 +79,13 @@ public class StudentController {
 	@GetMapping("/formaZaAzuriranje")
 	public String formaZaAzuriranje(@RequestParam("studentId") int id, Model model) {
 		
-		Student student = studentService.getStudentById(id);
+		Student student = new Student();
+		
+		try {
+			student = studentService.getStudentById(id);
+		} catch (RuntimeException e) {
+			System.out.println(e.getMessage());
+		}
 		
 		model.addAttribute("student", student);
 		
@@ -71,6 +95,9 @@ public class StudentController {
 	@GetMapping("/obrisiStudenta")
 	public String obrisiStudenta(@RequestParam("studentId") int id) {
 		
+		/**
+			Nije potreban try/catch jer u slučaju da zapis ne postoji ignorira se.
+		**/
 		studentService.deleteById(id);
 		
 		return "redirect:/studenti/lista";
@@ -79,6 +106,9 @@ public class StudentController {
 	@GetMapping("/upisiPristustvo")
 	public String upisiPrisutstvo(Model model) {
 		
+		/**
+			Nije potreban try/catch jer u slučaju da zapisa nema vraća se null.
+		**/
 		List<Student> studenti = studentService.findAll();
 		PrisutstvoDto prisutstvoDto = new PrisutstvoDto();
 		
@@ -93,24 +123,28 @@ public class StudentController {
 	@PostMapping("/spremiPrisutstvo")
 	public String spremiPrisutstvo(@ModelAttribute("prisutstvoDto") PrisutstvoDto prisutstvoDto) {
 		
-		Prisutstvo prisutstvo;
-		
-		Prisutstvo postojecePrisutstvo = prisutstvoService.getPrisutstvoByBrojVjezbe(prisutstvoDto.getBrojVjezbe());
-		
-		if(postojecePrisutstvo != null) {
-			postojecePrisutstvo.getStudenti().add(studentService.getStudentById(prisutstvoDto.getStudentId()));
+		try {
+			Prisutstvo prisutstvo = new Prisutstvo();
+			Prisutstvo postojecePrisutstvo = prisutstvoService.getPrisutstvoByBrojVjezbe(prisutstvoDto.getBrojVjezbe());
 			
-			prisutstvo = postojecePrisutstvo;
-		} else {
-			prisutstvo = new Prisutstvo();
+			if(postojecePrisutstvo != null) {
+				if(postojecePrisutstvo.getStudenti().contains(studentService.getStudentById(prisutstvoDto.getStudentId()))) {
+					// Ništa se ne događa jer ako student postoji u klasi za određenu vježbu, ne dodaje se ponovno.
+				} else {
+					postojecePrisutstvo.getStudenti().add(studentService.getStudentById(prisutstvoDto.getStudentId()));
+					prisutstvo = postojecePrisutstvo;
+				}
+			} else {
+				prisutstvo = new Prisutstvo();
+				
+				prisutstvo.setBrojVjezbe(prisutstvoDto.getBrojVjezbe());
+				prisutstvo.setStudenti(List.of(studentService.getStudentById(prisutstvoDto.getStudentId())));
+			}
 			
-			prisutstvo.setBrojVjezbe(prisutstvoDto.getBrojVjezbe());
-			prisutstvo.setStudenti(List.of(studentService.getStudentById(prisutstvoDto.getStudentId())));
+			prisutstvoService.save(prisutstvo);
+		} catch (Exception e) {
+			System.out.println(e.getMessage());
 		}
-		
-		prisutstvoService.save(prisutstvo);
-		
-		System.out.println(prisutstvoService.findAll());
 		
 		return "redirect:/studenti/upisiPristustvo";
 	}
@@ -127,11 +161,20 @@ public class StudentController {
 		
 		List<Student> sviStudenti = studentService.findAll();
 		
+		/**
+			Iteriramo kroz postojeća prisutstva i punimo hashmapu studenti sa brojem vježbe kao ključ.
+		**/
 		if(prisutstva.size() == 3) {
 			for(int i=0; i<prisutstva.size(); i++) {
 				studenti.put(i,prisutstva.get(i).getStudenti());
 			}
 			
+			/** 
+			    Iteriramo kroz napunjenu hashmapu studenti i svakoga studenta u mapi uspoređujemo sa svim dostupnim studentima.
+			 	Ako je student pronađen, provjerava se je li već dodan u mapu brojDolazaka koja prati broj dolazaka studenata.
+				Ako je već dodan, counter se povećava za jedan i dodaje u mapu za tog studenta.
+				Ako nije dodan, kreira se novi zapis u mapi i dodaje mu se broj jednog dolaska.
+			**/
 			for(int i = 0; i < studenti.size(); i++) {
 				List<Student> temp = studenti.get(i);
 				for(int j = 0; j < sviStudenti.size(); j++) {
@@ -146,6 +189,12 @@ public class StudentController {
 				}
 			}
 
+			/** 
+				Iteriramo kroz listu svih dohvaćenih studenata te ako je neki student pronađen u mapi brojDolazaka
+				provjerava se je li broj dolazaka tog studenta veći ili jednak 6 od 10. 
+				Ako je dodaje se u mapu studentiZaUpis koja se vraća na upis ocjene.
+				Ako nije, odbacuje se.
+			**/
 			for(int i = 0; i < sviStudenti.size(); i++) {
 				if(brojDolazaka.get(sviStudenti.get(i)) != null) {
 					if(brojDolazaka.get(sviStudenti.get(i)) >= 6) {
@@ -183,7 +232,12 @@ public class StudentController {
 		
 		try {
 			List<Student> studenti = studentService.findAll();
+			/**
+			 	Iteriramo kroz listu svih studenata te ako je studentu ocjena 0 (nije unesena) ili 1 (nedovoljan) dodaje se u mapu neuspjesniStudenti.
+			 	U protivnom, student se dodaje u listu uspjesniStudenti.
+			**/
 			for(int i = 0; i < studenti.size(); i++) {
+				// int vrijednosti pretvaramo u Integer vrijednosti kako bi usporedbu vršili pomoću Java metode .equals
 				if(Integer.valueOf(studenti.get(i).getOcjena()).equals(Integer.valueOf(0)) || Integer.valueOf(studenti.get(i).getOcjena()).equals(Integer.valueOf(1))){
 					neuspjesniStudenti.add(studenti.get(i));
 				} else {

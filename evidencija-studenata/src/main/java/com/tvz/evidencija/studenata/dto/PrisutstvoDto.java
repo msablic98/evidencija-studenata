@@ -1,5 +1,14 @@
 package com.tvz.evidencija.studenata.dto;
 
+/**
+ * 
+ * @author msablic
+ *
+ * DTO ili Data Transfer Object klase su klase koje služe za prenošenje podataka između procesa.
+ * 
+ * U ovom slučaju, služi za prenošenje broja vježbe za koju se upisuje prisutstvo studenta koji se prenosi pomoću ID-a.
+ */
+
 public class PrisutstvoDto {
 
 	private int brojVjezbe;

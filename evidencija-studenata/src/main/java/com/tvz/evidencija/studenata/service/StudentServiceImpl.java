@@ -9,6 +9,22 @@ import org.springframework.stereotype.Service;
 import com.tvz.evidencija.studenata.dao.StudentRepository;
 import com.tvz.evidencija.studenata.entity.Student;
 
+/**
+ * 
+ * @author msablic
+ *
+ * Implementacijska klasa sa @Service anotacijom sadrži logiku svih metoda koje su navedene u interface klasi.
+ * 
+ * Svaka metoda za koju pišemo logiku, mora sadržavati @Override anotaciju koja daje do znanja Spring-u kako se
+ * radi o implementaciji postojeće metode.
+ * 
+ * Ovdje također koristimo Repository klasu za sve ORM akcije. Sva polja koja su označena sa @Autowired anotacijom 
+ * učitavaju se u klasi pomoću dependecy injection-a. 
+ * 
+ * Ova klasa sadrži implementaciju svih metoda za manipuliranje Student podacima.
+ * 
+ */
+
 @Service
 public class StudentServiceImpl implements StudentService {
 

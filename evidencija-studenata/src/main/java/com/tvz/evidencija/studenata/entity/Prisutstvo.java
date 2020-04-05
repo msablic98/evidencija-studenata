@@ -11,6 +11,17 @@ import javax.persistence.Id;
 import javax.persistence.ManyToMany;
 import javax.persistence.Table;
 
+/**
+ * 
+ * @author msablic
+ *
+ * Entity klase odnosno entiteti su POJO (Plain Old Java Object) klase koje imaju sposobnost reprezentacije
+ * objekata u bazi podataka.
+ * 
+ * Ovaj entitet sadrži podatke za tablicu "prisutstvo" te sve njezine redove. 
+ * 
+ */
+
 @Entity
 @Table(name="prisutstvo")
 public class Prisutstvo {
