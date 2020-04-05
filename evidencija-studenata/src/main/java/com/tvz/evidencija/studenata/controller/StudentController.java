@@ -156,7 +156,9 @@ public class StudentController {
 					}
 				} else {
 					prisutstvo.setBrojVjezbe(prisutstvoDto.getBrojVjezbe());
-					prisutstvo.setStudenti(List.of(student));
+					List<Student> temp = new ArrayList<>();
+					temp.add(student);
+					prisutstvo.setStudenti(temp);
 					student.setEvidentiran(true);
 				}
 			} catch (Exception e) {
