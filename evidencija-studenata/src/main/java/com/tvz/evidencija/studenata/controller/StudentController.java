@@ -147,16 +147,16 @@ public class StudentController {
 				Student student = studentService.dohvatiStudentaPoId(prisutstvoDto.getStudentId());
 				
 				if(postojecePrisutstvo != null) {
-					if(postojecePrisutstvo.getStudenti().contains(studentService.dohvatiStudentaPoId(prisutstvoDto.getStudentId()))) {
+					if(postojecePrisutstvo.getStudenti().contains(student)) {
 						// Ništa se ne događa jer ako student postoji u klasi za određenu vježbu, ne dodaje se ponovno.
 					} else {
-						postojecePrisutstvo.getStudenti().add(studentService.dohvatiStudentaPoId(prisutstvoDto.getStudentId()));
+						postojecePrisutstvo.getStudenti().add(student);
 						prisutstvo = postojecePrisutstvo;
 						student.setEvidentiran(true);
 					}
 				} else {
 					prisutstvo.setBrojVjezbe(prisutstvoDto.getBrojVjezbe());
-					prisutstvo.setStudenti(List.of(studentService.dohvatiStudentaPoId(prisutstvoDto.getStudentId())));
+					prisutstvo.setStudenti(List.of(student));
 					student.setEvidentiran(true);
 				}
 			} catch (Exception e) {
