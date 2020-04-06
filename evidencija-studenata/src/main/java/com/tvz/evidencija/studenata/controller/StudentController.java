@@ -156,6 +156,7 @@ public class StudentController {
 					}
 				} else {
 					prisutstvo.setBrojVjezbe(prisutstvoDto.getBrojVjezbe());
+					// Workaround kreiranja nove liste iz razloga što na serveru ne radi kada se student dodaje pomoću List.of(student)
 					List<Student> temp = new ArrayList<>();
 					temp.add(student);
 					prisutstvo.setStudenti(temp);
