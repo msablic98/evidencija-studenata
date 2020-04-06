@@ -190,7 +190,7 @@ public class StudentController {
 		/**
 			Iteriramo kroz postojeća prisutstva i punimo hashmapu studenti sa brojem vježbe kao ključ.
 		**/
-		if(prisutstva.size() == 10) {
+		if(prisutstva.size() >= 10) {
 			for(int i=0; i<prisutstva.size(); i++) {
 				studenti.put(i,prisutstva.get(i).getStudenti());
 			}
@@ -261,7 +261,7 @@ public class StudentController {
 		**/
 		boolean uneseneSveVjezbe = false;
 		List<Prisutstvo> prisutstva = prisutstvoService.dohvatiSve();
-		if(prisutstva.size() == 10) {
+		if(prisutstva.size() >= 10) {
 			uneseneSveVjezbe = true;
 		}
 		
