@@ -16,12 +16,12 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.servlet.ModelAndView;
 
-import com.tvz.evidencija.studenata.dto.PrisutstvoDto;
+import com.tvz.evidencija.studenata.dto.PrisustvoDto;
 import com.tvz.evidencija.studenata.dto.UpisOcjeneDto;
-import com.tvz.evidencija.studenata.entity.Prisutstvo;
+import com.tvz.evidencija.studenata.entity.Prisustvo;
 import com.tvz.evidencija.studenata.entity.Student;
 import com.tvz.evidencija.studenata.excel.IzvozExcel;
-import com.tvz.evidencija.studenata.service.PrisutstvoService;
+import com.tvz.evidencija.studenata.service.PrisustvoService;
 import com.tvz.evidencija.studenata.service.StudentService;
 
 /**
@@ -46,7 +46,7 @@ public class StudentController {
 	private StudentService studentService;
 	
 	@Autowired
-	private PrisutstvoService prisutstvoService;
+	private PrisustvoService prisustvoService;
 	
 	@GetMapping("/lista")
 	public String getLista(Model model) {
@@ -109,7 +109,7 @@ public class StudentController {
 		Student student = studentService.dohvatiStudentaPoId(id);
 		
 		if(student.isEvidentiran()) {
-			// Ništa se ne događa jer je za studenta već prijavljena pristunost i ne može se obrisati.
+			// Ništa se ne događa jer je za studenta već prijavljena prisutnost i ne može se obrisati.
 		} else {
 			studentService.obrisiStudentaPoId(id);
 		}
@@ -117,68 +117,68 @@ public class StudentController {
 		return "redirect:/studenti/lista";
 	}
 	
-	@GetMapping("/upisiPristustvo")
-	public String upisiPrisutstvo(Model model) {
-		LOGGER.debug("Zahtjev za upis pristustva");
+	@GetMapping("/upisiPrisustvo")
+	public String upisiPrisustvo(Model model) {
+		LOGGER.debug("Zahtjev za upis prisustva");
 		
 		/**
 			Nije potreban try/catch jer u slučaju da zapisa nema vraća se null.
 		**/
 		List<Student> studenti = studentService.dohvatiSve();
-		PrisutstvoDto prisutstvoDto = new PrisutstvoDto();
+		PrisustvoDto prisustvoDto = new PrisustvoDto();
 		
 		
 		model.addAttribute("studenti", studenti);
-		model.addAttribute("prisutstvoDto",prisutstvoDto);
+		model.addAttribute("prisustvoDto",prisustvoDto);
 		
-		return "studenti/studenti-prisutstvo";
+		return "studenti/studenti-prisustvo";
 		
 	}
 	
-	@PostMapping("/spremiPrisutstvo")
-	public String spremiPrisutstvo(@ModelAttribute("prisutstvoDto") PrisutstvoDto prisutstvoDto) {
-		LOGGER.debug("Zahtjev za upis prisutstva za studenta sa ID-jem: ", prisutstvoDto.getStudentId());
+	@PostMapping("/spremiPrisustvo")
+	public String spremiPrisustvo(@ModelAttribute("prisustvoDto") PrisustvoDto prisustvoDto) {
+		LOGGER.debug("Zahtjev za upis prisutstva za studenta sa ID-jem: ", prisustvoDto.getStudentId());
 		
-		Prisutstvo prisutstvo = new Prisutstvo();
+		Prisustvo prisustvo = new Prisustvo();
 		
-		if(prisutstvoDto.getStudentId() != 0) {
+		if(prisustvoDto.getStudentId() != 0) {
 			try {
-				Prisutstvo postojecePrisutstvo = prisutstvoService.dohvatiPrisutstvoPoBrojuVjezbe(prisutstvoDto.getBrojVjezbe());
-				Student student = studentService.dohvatiStudentaPoId(prisutstvoDto.getStudentId());
+				Prisustvo postojecePrisustvo = prisustvoService.dohvatiPrisustvoPoBrojuVjezbe(prisustvoDto.getBrojVjezbe());
+				Student student = studentService.dohvatiStudentaPoId(prisustvoDto.getStudentId());
 				
-				if(postojecePrisutstvo != null) {
-					if(postojecePrisutstvo.getStudenti().contains(student)) {
+				if(postojecePrisustvo != null) {
+					if(postojecePrisustvo.getStudenti().contains(student)) {
 						// Ništa se ne događa jer ako student postoji u klasi za određenu vježbu, ne dodaje se ponovno.
 					} else {
-						postojecePrisutstvo.getStudenti().add(student);
-						prisutstvo = postojecePrisutstvo;
+						postojecePrisustvo.getStudenti().add(student);
+						prisustvo = postojecePrisustvo;
 						student.setEvidentiran(true);
 					}
 				} else {
-					prisutstvo.setBrojVjezbe(prisutstvoDto.getBrojVjezbe());
+					prisustvo.setBrojVjezbe(prisustvoDto.getBrojVjezbe());
 					// Workaround kreiranja nove liste iz razloga što na serveru ne radi kada se student dodaje pomoću List.of(student)
 					List<Student> temp = new ArrayList<>();
 					temp.add(student);
-					prisutstvo.setStudenti(temp);
+					prisustvo.setStudenti(temp);
 					student.setEvidentiran(true);
 				}
 			} catch (Exception e) {
-				LOGGER.error("Iznimka u upisu prisutstva za studenta sa ID-jem: " + prisutstvoDto.getStudentId(), e.getMessage());
+				LOGGER.error("Iznimka u upisu prisustva za studenta sa ID-jem: " + prisustvoDto.getStudentId(), e.getMessage());
 			}
 		} else {
-			prisutstvo.setBrojVjezbe(prisutstvoDto.getBrojVjezbe());
+			prisustvo.setBrojVjezbe(prisustvoDto.getBrojVjezbe());
 		}
 		
-		prisutstvoService.spremi(prisutstvo);
+		prisustvoService.spremi(prisustvo);
 		
-		return "redirect:/studenti/upisiPristustvo";
+		return "redirect:/studenti/upisiPrisustvo";
 	}
 	
 	@GetMapping("/upisiOcjenu")
 	public String upisiOcjenu(Model model) {
 		LOGGER.debug("Zahtjev za upis ocjene");
 		
-		List<Prisutstvo> prisutstva = prisutstvoService.dohvatiSve();
+		List<Prisustvo> prisustva = prisustvoService.dohvatiSve();
 		UpisOcjeneDto upisOcjeneDto = new UpisOcjeneDto();
 		
 		HashMap<Integer,List<Student>> studenti = new HashMap<>();
@@ -188,11 +188,11 @@ public class StudentController {
 		List<Student> sviStudenti = studentService.dohvatiSve();
 		
 		/**
-			Iteriramo kroz postojeća prisutstva i punimo hashmapu studenti sa brojem vježbe kao ključ.
+			Iteriramo kroz postojeća prisustva i punimo hashmapu studenti sa brojem vježbe kao ključ.
 		**/
-		if(prisutstva.size() >= 10) {
-			for(int i=0; i<prisutstva.size(); i++) {
-				studenti.put(i,prisutstva.get(i).getStudenti());
+		if(prisustva.size() >= 10) {
+			for(int i=0; i<prisustva.size(); i++) {
+				studenti.put(i,prisustva.get(i).getStudenti());
 			}
 			
 			/** 
@@ -260,8 +260,8 @@ public class StudentController {
 		   Ako nisu, pokazuje se poruka da se moraju evidentirati sve vježbe i ocjene.
 		**/
 		boolean uneseneSveVjezbe = false;
-		List<Prisutstvo> prisutstva = prisutstvoService.dohvatiSve();
-		if(prisutstva.size() >= 10) {
+		List<Prisustvo> prisustva = prisustvoService.dohvatiSve();
+		if(prisustva.size() >= 10) {
 			uneseneSveVjezbe = true;
 		}
 		
@@ -348,7 +348,7 @@ public class StudentController {
 	@GetMapping("/obrisiSve")
 	public String obrisiSve() {
 		
-		prisutstvoService.obrisiSve();
+		prisustvoService.obrisiSve();
 		
 		studentService.obrisiSve();
 		

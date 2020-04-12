@@ -26,7 +26,7 @@
 		<hr>
 	
 		<div th:if="${#lists.isEmpty(studenti)}">
-			<h2 class="text-center">Nije evidentirana prisutnost za sve vježbe, <a th:href="@{/studenti/upisiPristustvo}">unesi prisutnost</a>.</h2>
+			<h2 class="text-center">Nije evidentirano prisustvo za sve vježbe, <a th:href="@{/studenti/upisiPrisustvo}">unesi prisustvo</a>.</h2>
 		</div>	
 			
 		<div th:if="${not #lists.isEmpty(studenti)}">	
