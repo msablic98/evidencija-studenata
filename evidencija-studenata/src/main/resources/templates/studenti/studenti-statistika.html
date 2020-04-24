@@ -1,0 +1,172 @@
+<!DOCTYPE HTML>
+
+<html lang="en" xmlns:th="http://www.thymeleaf.org">
+
+<head>
+<meta charset="utf-8">
+<meta name="viewport"
+	content="width=device-width, initial-scale=1, shrink-to-fit=no">
+
+<!-- Bootstrap CSS -->
+<link rel="stylesheet"
+	href="https://stackpath.bootstrapcdn.com/bootstrap/4.3.1/css/bootstrap.min.css"
+	integrity="sha384-ggOyR0iXCbMQv3Xipma34MD+dH/1fQ784/j6cY/iJTQUOhcWr7x9JvoRxT2MZw1T"
+	crossorigin="anonymous">
+	
+<!-- Highcharts CSS i Javascript -->
+<link rel="stylesheet"
+    href="https://code.highcharts.com/css/highcharts.css" />
+<script
+    src="https://ajax.googleapis.com/ajax/libs/jquery/3.4.1/jquery.min.js"></script>
+<script
+    src="https://maxcdn.bootstrapcdn.com/bootstrap/3.4.1/js/bootstrap.min.js"></script>
+<script src="https://code.highcharts.com/highcharts.js"></script>
+<script src="https://code.highcharts.com/modules/exporting.js"></script>
+<script src="https://code.highcharts.com/modules/export-data.js"></script>
+<script src="https://code.highcharts.com/modules/accessibility.js"></script>
+
+<title>Pregled ocjena</title>
+</head>
+
+<body>
+
+	<div class="container">
+	
+		<h3 style="text-align:center; margin-top:20px;">Evidencija studenata</h3>
+		<hr>
+		
+		<div th:if="${uneseneSveVjezbe} == false">
+			<h2 class="text-center">Nisu evidentirane sve vježbe ili ocjene, unesi <a th:href="@{/studenti/upisiPrisustvo}">vježbe</a> ili <a th:href="@{/studenti/upisiOcjenu}">ocjene</a>.</h2>
+		</div>
+		
+		<div th:if="${uneseneSveVjezbe} == true">
+		<figure class="highcharts-figure">
+        <div id="container-prisustvo"></div>
+	    </figure>
+	    <br>
+	    <hr>
+	    <figure class="highcharts-figure">
+        <div id="container-ocjene"></div>
+	    </figure>
+	    
+	    <script type="text/javascript">
+	    // AJAX poziv na endpoint za dohvat podataka o statistici prisustava
+	        $(document).ready(
+	                function() {
+	                    $.ajax({
+	                        url : "/studenti/dohvatiStatistikuPrisustva",
+	                        success : function(result) {
+	                            var brojVjezbe = [];
+	                            var brojStudenata = [];
+	                            console.log(result);
+	                            Object.keys(result).forEach(
+	                                    function(key) {
+	                                    	brojVjezbe.push(key);
+	                                    	brojStudenata.push(result[key]);
+	                                    });
+	                            nacrtajStatistikuPrisustva(brojVjezbe, brojStudenata);
+	                        }
+	                    });
+	                });
+	     // AJAX poziv na endpoint za dohvat podataka o statistici ocjena    
+	        $(document).ready(
+	                function() {
+	                    $.ajax({
+	                        url : "/studenti/dohvatiStatistikuOcjena",
+	                        success : function(result) {
+	                        	var student = [];
+	                            var ocjena = [];
+	                            console.log(result);
+	                            Object.keys(result).forEach(
+	                                    function(key) {
+	                                    	student.push(key);
+	                                    	ocjena.push(result[key]);
+	                                    });
+	                            
+	                            var jsonPodaci = [];
+
+	                            for (var i = 0; i < student.length; i++) {
+	                            	jsonPodaci.push({
+	                                    name: student[i],
+	                                    y: ocjena[i]
+	                                });
+	                            }
+	                            
+	                            nacrtajStatistikuOcjena(jsonPodaci);
+	                        }
+	                    });
+	                });
+	                
+	        
+	 	// Highcharts funkcija za crtanje grafa (basic column graph)
+	        function nacrtajStatistikuPrisustva(brojVjezbe, brojStudenata) {
+	            Highcharts.chart('container-prisustvo', {
+	                chart : {
+	                    type : 'column',
+	                    styledMode : true
+	                },
+	                title : {
+	                    text : 'Statistika dolazaka na laboratorijske vježbe'
+	                },
+	                xAxis : [ {
+	                    title : {
+	                        text : 'Broj laboratorijske vježbe'
+	                    },
+	                    categories : brojVjezbe
+	                } ],
+	                yAxis : [ {
+	                    className : 'highcharts-color-0',
+	                    title : {
+	                        text : 'Broj studenata na vježbi'
+	                    }
+	                } ],
+	                series : [ {
+	                	name: 'Broj prisutnih',
+	                    data : brojStudenata
+	                } ]
+	            });
+	        }
+	        
+	     // Highcharts funkcija za crtanje grafa (basic pie chart)
+	        function nacrtajStatistikuOcjena(jsonPodaci) {
+	        	Highcharts.chart('container-ocjene', {
+	        	    chart: {
+	        	        plotBackgroundColor: null,
+	        	        plotBorderWidth: null,
+	        	        plotShadow: false,
+	        	        type: 'pie'
+	        	    },
+	        	    title: {
+	        	        text: 'Statistika ocjena studenata'
+	        	    },
+	        	    tooltip: {
+	        	        pointFormat: '{series.name}: <b>{point.y}</b><br/>',
+	        	    },
+	        	    
+	        	    plotOptions: {
+	        	        pie: {
+	        	            allowPointSelect: true,
+	        	            cursor: 'pointer',
+	        	            dataLabels: {
+	        	                enabled: true
+	        	            }
+	        	        }
+	        	    },
+	        	    series: [{
+	        	        name: 'Broj ocjena',
+	        	        colorByPoint: true,
+	        	        data: jsonPodaci
+	        	    }]
+	        	});
+	        	
+	        }
+	    </script>
+		</div>
+		
+		<hr>
+		<center>
+ 		<a th:href="@{/studenti/lista}">Povratak na listu studenata</a>
+ 		</center>
+	</div>
+</body>
+</html>

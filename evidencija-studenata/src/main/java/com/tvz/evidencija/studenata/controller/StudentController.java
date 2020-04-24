@@ -3,10 +3,14 @@ package com.tvz.evidencija.studenata.controller;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
+import java.util.TreeMap;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.http.HttpStatus;
+import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.GetMapping;
@@ -178,64 +182,16 @@ public class StudentController {
 	public String upisiOcjenu(Model model) {
 		LOGGER.debug("Zahtjev za upis ocjene");
 		
-		List<Prisustvo> prisustva = prisustvoService.dohvatiSve();
 		UpisOcjeneDto upisOcjeneDto = new UpisOcjeneDto();
 		
-		HashMap<Integer,List<Student>> studenti = new HashMap<>();
-		HashMap<Student,Integer> brojDolazaka = new HashMap<>();
-		List<Student> studentiZaUpis = new ArrayList<>();
-		
-		List<Student> sviStudenti = studentService.dohvatiSve();
-		
-		/**
-			Iteriramo kroz postojeća prisustva i punimo hashmapu studenti sa brojem vježbe kao ključ.
-		**/
-		if(prisustva.size() >= 10) {
-			for(int i=0; i<prisustva.size(); i++) {
-				studenti.put(i,prisustva.get(i).getStudenti());
-			}
-			
-			/** 
-			    Iteriramo kroz napunjenu hashmapu studenti i svakoga studenta u mapi uspoređujemo sa svim dostupnim studentima.
-			 	Ako je student pronađen, provjerava se je li već dodan u mapu brojDolazaka koja prati broj dolazaka studenata.
-				Ako je već dodan, counter se povećava za jedan i dodaje u mapu za tog studenta.
-				Ako nije dodan, kreira se novi zapis u mapi i dodaje mu se broj jednog dolaska.
-			**/
-			for(int i = 0; i < studenti.size(); i++) {
-				List<Student> temp = studenti.get(i);
-				for(int j = 0; j < sviStudenti.size(); j++) {
-					if(temp.contains(sviStudenti.get(j))) {
-						if(brojDolazaka.containsKey(sviStudenti.get(j))) {
-							int increment = brojDolazaka.get(sviStudenti.get(j)) + 1;
-							brojDolazaka.put(sviStudenti.get(j), increment);
-						} else {
-							brojDolazaka.put(sviStudenti.get(j), 1);
-						}
-					}
-				}
-			}
-
-			/** 
-				Iteriramo kroz listu svih dohvaćenih studenata te ako je neki student pronađen u mapi brojDolazaka
-				provjerava se je li broj dolazaka tog studenta veći ili jednak 6 od 10 dolazaka. 
-				Ako je dodaje se u mapu studentiZaUpis koja se vraća na upis ocjene.
-				Ako nije, odbacuje se.
-			**/
-			for(int i = 0; i < sviStudenti.size(); i++) {
-				if(brojDolazaka.get(sviStudenti.get(i)) != null) {
-					if(brojDolazaka.get(sviStudenti.get(i)) >= 6) {
-						studentiZaUpis.add(sviStudenti.get(i));
-					}
-				}
-			}
-		}
+		List<Student> studentiZaUpis = dohvatiStudenteZaPotpis();
 		
 		model.addAttribute("studenti", studentiZaUpis);
 		model.addAttribute("upisOcjeneDto", upisOcjeneDto);
 		
 		return "studenti/studenti-ocjene";
 	}
-	
+
 	@PostMapping("/spremiOcjenu")
 	public String spremiOcjenu(@ModelAttribute("upisOcjeneDto") UpisOcjeneDto upisOcjeneDto) {
 		LOGGER.debug("Zahtjev za spremanje ocjene za studenta sa ID-jem: ", upisOcjeneDto.getStudentId());
@@ -295,6 +251,7 @@ public class StudentController {
 	
 	@GetMapping("/izveziUspjesne")
 	public ModelAndView izveziUspjesne(){
+		LOGGER.debug("Zahtjev za izvoz uspješnih studenata");
 		
         List<Student> studentiZaIzvoz = new ArrayList<Student>(); 
         
@@ -321,6 +278,7 @@ public class StudentController {
 	
 	@GetMapping("/izveziNeuspjesne")
 	public ModelAndView izveziNespjesne(){
+		LOGGER.debug("Zahtjev za izvoz neuspješnih studenata");
 		
         List<Student> studentiZaIzvoz = new ArrayList<Student>(); 
         
@@ -347,11 +305,145 @@ public class StudentController {
 	
 	@GetMapping("/obrisiSve")
 	public String obrisiSve() {
+		LOGGER.debug("Zahtjev za brisanje svih studenata");
 		
 		prisustvoService.obrisiSve();
 		
 		studentService.obrisiSve();
 		
 		return "redirect:/studenti/lista";
+	}
+	
+	@GetMapping("/prikaziStatistiku")
+	public String prikaziStatistiku(Model model) {
+		LOGGER.debug("Zahtjev za prikaz statistike");
+		
+		boolean uneseneSveVjezbe = false;
+		List<Prisustvo> prisustva = prisustvoService.dohvatiSve();
+		if(prisustva.size() >= 10) {
+			uneseneSveVjezbe = true;
+		}
+		
+		model.addAttribute("uneseneSveVjezbe", uneseneSveVjezbe);
+		
+		// vraćamo samo stranicu jer kada se stranica učita poslati će AJAX request na endpoint za dohvat statističkih podataka
+		return "studenti/studenti-statistika";
+	}
+	
+	@GetMapping("/dohvatiStatistikuPrisustva")
+	public ResponseEntity<Map<Integer, Integer>> dohvatiStatistikuPrisustva() {
+		LOGGER.debug("Zahtjev za dohvat statističkih podataka o prisustvu");
+		
+        Map<Integer, Integer> podaciZaGraf = new TreeMap<>();
+		List<Prisustvo> prisustva = prisustvoService.dohvatiSve();
+		
+		// Dohvaćamo sva prisustva te za svaku vježbu u mapu za graf dodajemo broj prisutnih studenata
+		for(int i = 0; i < prisustva.size(); i++) {
+			if(!podaciZaGraf.containsKey(prisustva.get(i).getBrojVjezbe())) {
+		        podaciZaGraf.put(prisustva.get(i).getBrojVjezbe(), prisustva.get(i).getStudenti().size());
+			}
+		}
+       
+        return new ResponseEntity<>(podaciZaGraf, HttpStatus.OK);
+    }
+	
+	@GetMapping("/dohvatiStatistikuOcjena")
+	public ResponseEntity<Map<String, Integer>> dohvatiStatistikuOcjena() {
+		LOGGER.debug("Zahtjev za dohvat statističkih podataka o ocjenama");
+		
+		List<Student> studenti = studentService.dohvatiSve();
+		Map<String,Integer> podaciZaGraf = new HashMap<>();
+		
+		// Iteriramo kroz listu svih studenata i punimo mapu za graf sa ocjenama ako postoje
+		for(int i = 0; i < studenti.size(); i++) {
+			if(studenti.get(i).getOcjena() != 0) {
+				if(studenti.get(i).getOcjena() == 1) {
+					if(podaciZaGraf.containsKey("Nedovoljan")) {
+						podaciZaGraf.put("Nedovoljan", podaciZaGraf.get("Nedovoljan") + 1);
+					} else {
+						podaciZaGraf.put("Nedovoljan", 1);
+					}
+				} else if(studenti.get(i).getOcjena() == 2) {
+					if(podaciZaGraf.containsKey("Dovoljan")) {
+						podaciZaGraf.put("Dovoljan", podaciZaGraf.get("Dovoljan") + 1);
+					} else {
+						podaciZaGraf.put("Dovoljan", 1);
+					}
+				} else if(studenti.get(i).getOcjena() == 3) {
+					if(podaciZaGraf.containsKey("Dobar")) {
+						podaciZaGraf.put("Dobar", podaciZaGraf.get("Dobar") + 1);
+					} else {
+						podaciZaGraf.put("Dobar", 1);
+					}
+				} else if(studenti.get(i).getOcjena() == 4) {
+					if(podaciZaGraf.containsKey("Vrlo dobar")) {
+						podaciZaGraf.put("Vrlo dobar", podaciZaGraf.get("Vrlo dobar") + 1);
+					} else {
+						podaciZaGraf.put("Vrlo dobar", 1);
+					}
+				} else if(studenti.get(i).getOcjena() == 5) {
+					if(podaciZaGraf.containsKey("Odličan")) {
+						podaciZaGraf.put("Odličan", podaciZaGraf.get("Odličan") + 1);
+					} else {
+						podaciZaGraf.put("Odličan", 1);
+					}
+				}
+			}
+		}
+       
+        return new ResponseEntity<>(podaciZaGraf, HttpStatus.OK);
+    }
+	
+	private List<Student> dohvatiStudenteZaPotpis() {
+		List<Prisustvo> prisustva = prisustvoService.dohvatiSve();
+		HashMap<Integer,List<Student>> studenti = new HashMap<>();
+		HashMap<Student,Integer> brojDolazaka = new HashMap<>();
+		List<Student> studentiZaUpis = new ArrayList<>();
+		
+		List<Student> sviStudenti = studentService.dohvatiSve();
+		
+		/**
+			Iteriramo kroz postojeća prisustva i punimo hashmapu studenti sa brojem vježbe kao ključ.
+		**/
+		if(prisustva.size() >= 10) {
+			for(int i=0; i<prisustva.size(); i++) {
+				studenti.put(i,prisustva.get(i).getStudenti());
+			}
+			
+			/** 
+			    Iteriramo kroz napunjenu hashmapu studenti i svakoga studenta u mapi uspoređujemo sa svim dostupnim studentima.
+			 	Ako je student pronađen, provjerava se je li već dodan u mapu brojDolazaka koja prati broj dolazaka studenata.
+				Ako je već dodan, counter se povećava za jedan i dodaje u mapu za tog studenta.
+				Ako nije dodan, kreira se novi zapis u mapi i dodaje mu se broj jednog dolaska.
+			**/
+			for(int i = 0; i < studenti.size(); i++) {
+				List<Student> temp = studenti.get(i);
+				for(int j = 0; j < sviStudenti.size(); j++) {
+					if(temp.contains(sviStudenti.get(j))) {
+						if(brojDolazaka.containsKey(sviStudenti.get(j))) {
+							int increment = brojDolazaka.get(sviStudenti.get(j)) + 1;
+							brojDolazaka.put(sviStudenti.get(j), increment);
+						} else {
+							brojDolazaka.put(sviStudenti.get(j), 1);
+						}
+					}
+				}
+			}
+
+			/** 
+				Iteriramo kroz listu svih dohvaćenih studenata te ako je neki student pronađen u mapi brojDolazaka
+				provjerava se je li broj dolazaka tog studenta veći ili jednak 6 od 10 dolazaka. 
+				Ako je dodaje se u mapu studentiZaUpis koja se vraća na upis ocjene.
+				Ako nije, odbacuje se.
+			**/
+			for(int i = 0; i < sviStudenti.size(); i++) {
+				if(brojDolazaka.get(sviStudenti.get(i)) != null) {
+					if(brojDolazaka.get(sviStudenti.get(i)) >= 2) {
+						studentiZaUpis.add(sviStudenti.get(i));
+					}
+				}
+			}
+		}
+		return studentiZaUpis;
 	}
 }
