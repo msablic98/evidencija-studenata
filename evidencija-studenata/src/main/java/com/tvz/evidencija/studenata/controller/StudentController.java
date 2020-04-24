@@ -438,7 +438,7 @@ public class StudentController {
 			**/
 			for(int i = 0; i < sviStudenti.size(); i++) {
 				if(brojDolazaka.get(sviStudenti.get(i)) != null) {
-					if(brojDolazaka.get(sviStudenti.get(i)) >= 2) {
+					if(brojDolazaka.get(sviStudenti.get(i)) >= 6) {
 						studentiZaUpis.add(sviStudenti.get(i));
 					}
 				}
