@@ -50,6 +50,7 @@
 	    </figure>
 	    
 	    <script type="text/javascript">
+	    
 	    // AJAX poziv na endpoint za dohvat podataka o statistici prisustava
 	        $(document).ready(
 	                function() {
@@ -74,21 +75,21 @@
 	                    $.ajax({
 	                        url : "/studenti/dohvatiStatistikuOcjena",
 	                        success : function(result) {
-	                        	var student = [];
-	                            var ocjena = [];
+	                        	var ocjena = [];
+	                            var vrijednost = [];
 	                            console.log(result);
 	                            Object.keys(result).forEach(
 	                                    function(key) {
-	                                    	student.push(key);
-	                                    	ocjena.push(result[key]);
+	                                    	ocjena.push(key);
+	                                    	vrijednost.push(result[key]);
 	                                    });
 	                            
 	                            var jsonPodaci = [];
 
-	                            for (var i = 0; i < student.length; i++) {
+	                            for (var i = 0; i < ocjena.length; i++) {
 	                            	jsonPodaci.push({
-	                                    name: student[i],
-	                                    y: ocjena[i]
+	                                    name: ocjena[i],
+	                                    y: vrijednost[i]
 	                                });
 	                            }
 	                            
